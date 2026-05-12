@@ -7,611 +7,151 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-  :root {
-    --cream: #F5F0E8;
-    --dark: #1A1A14;
-    --forest: #2D5016;
-    --sage: #6B8F5E;
-    --gold: #C9A84C;
-    --lake: #3A7CA5;
-    --coral: #C4614A;
-    --light-sage: #E8EFE3;
-    --border: rgba(26,26,20,0.12);
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--dark);
-    overflow-x: hidden;
-  }
-
-  /* HERO */
-  .hero {
-    position: relative;
-    height: 100vh;
-    min-height: 600px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    background: var(--dark);
-    overflow: hidden;
-  }
-
-  .hero-bg {
-    position: absolute; inset: 0;
-    background: 
-      radial-gradient(ellipse at 20% 50%, rgba(45,80,22,0.4) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 30%, rgba(58,124,165,0.3) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 80%, rgba(201,168,76,0.15) 0%, transparent 50%);
-  }
-
-  .hero-dots {
-    position: absolute; inset: 0;
-    background-image: radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
-    background-size: 32px 32px;
-  }
-
-  .hero-content { position: relative; z-index: 2; padding: 2rem; }
-
-  .hero-tag {
-    display: inline-block;
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    border: 1px solid rgba(201,168,76,0.4);
-    padding: 0.4rem 1rem;
-    border-radius: 100px;
-    margin-bottom: 2rem;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.2s forwards;
-  }
-
-  .hero h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(3rem, 8vw, 6rem);
-    font-weight: 400;
-    color: var(--cream);
-    line-height: 1.05;
-    margin-bottom: 1.5rem;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.4s forwards;
-  }
-
-  .hero h1 em {
-    font-style: italic;
-    color: var(--gold);
-  }
-
-  .hero-sub {
-    font-size: 1rem;
-    font-weight: 300;
-    color: rgba(245,240,232,0.6);
-    letter-spacing: 0.05em;
-    margin-bottom: 3rem;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.6s forwards;
-  }
-
-  .hero-pills {
-    display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;
-    opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
-  }
-
-  .pill {
-    background: rgba(245,240,232,0.1);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(245,240,232,0.2);
-    color: var(--cream);
-    padding: 0.5rem 1.25rem;
-    border-radius: 100px;
-    font-size: 0.8rem;
-    font-weight: 400;
-  }
-
-  .pill span { margin-right: 0.4rem; }
-
-  .scroll-hint {
-    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
-    color: rgba(245,240,232,0.4);
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    animation: bounce 2s infinite;
-    z-index: 2;
-  }
-
-  /* NAV */
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(245,240,232,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 56px;
-  }
-
-  .nav-logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 1rem;
-    font-style: italic;
-    color: var(--forest);
-  }
-
-  .nav-links {
-    display: flex; gap: 0.25rem;
-    list-style: none;
-  }
-
-  .nav-links a {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--dark);
-    text-decoration: none;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
-    transition: background 0.2s;
-  }
-
-  .nav-links a:hover { background: var(--light-sage); }
-
-  /* SECTIONS */
-  section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
-
-  .section-label {
-    font-size: 0.65rem;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--sage);
-    margin-bottom: 0.75rem;
-  }
-
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 400;
-    line-height: 1.2;
-    margin-bottom: 1rem;
-  }
-
-  .section-intro {
-    font-size: 1rem;
-    font-weight: 300;
-    color: rgba(26,26,20,0.65);
-    max-width: 580px;
-    line-height: 1.7;
-    margin-bottom: 3rem;
-  }
-
-  /* MAP SECTION */
-  .map-section {
-    background: var(--dark);
-    padding: 5rem 0 0;
-    width: 100%;
-    max-width: none;
-  }
-
-  .map-section-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 2rem 3rem;
-  }
-
-  .map-section .section-label { color: var(--gold); opacity: 0.8; }
-  .map-section .section-title { color: var(--cream); }
-  .map-section .section-intro { color: rgba(245,240,232,0.5); }
-
-  #map {
-    width: 100%;
-    height: 520px;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid rgba(245,240,232,0.1);
-  }
-
-  /* TIMELINE / STOPS */
-  .stops-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .stop-card {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-  }
-
-  .stop-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-  }
-
-  .stop-card.active {
-    border-color: var(--forest);
-    box-shadow: 0 0 0 2px var(--forest);
-  }
-
-  .stop-side {
-    width: 6px;
-    background: var(--sage);
-  }
-
-  .stop-side.outbound { background: var(--forest); }
-  .stop-side.destination { background: var(--gold); }
-  .stop-side.return { background: var(--coral); }
-
-  .stop-body { padding: 1.5rem 1.75rem; }
-
-  .stop-meta {
-    display: flex; align-items: center; gap: 0.75rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .stop-day {
-    font-size: 0.65rem;
-    font-weight: 500;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--sage);
-  }
-
-  .stop-tag {
-    font-size: 0.65rem;
-    font-weight: 500;
-    padding: 0.2rem 0.6rem;
-    border-radius: 100px;
-    background: var(--light-sage);
-    color: var(--forest);
-  }
-
-  .stop-tag.destination {
-    background: rgba(201,168,76,0.15);
-    color: #8B6914;
-  }
-
-  .stop-tag.return {
-    background: rgba(196,97,74,0.12);
-    color: var(--coral);
-  }
-
-  .stop-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    font-weight: 400;
-    margin-bottom: 0.5rem;
-  }
-
-  .stop-km {
-    font-size: 0.78rem;
-    color: rgba(26,26,20,0.45);
-    margin-bottom: 0.9rem;
-  }
-
-  .stop-desc {
-    font-size: 0.88rem;
-    font-weight: 300;
-    color: rgba(26,26,20,0.7);
-    line-height: 1.65;
-    margin-bottom: 1rem;
-  }
-
-  .activities {
-    display: flex; flex-wrap: wrap; gap: 0.4rem;
-  }
-
-  .activity-tag {
-    font-size: 0.72rem;
-    padding: 0.3rem 0.7rem;
-    border-radius: 6px;
-    background: var(--cream);
-    border: 1px solid var(--border);
-    color: rgba(26,26,20,0.75);
-  }
-
-  /* ANNECY HIGHLIGHT */
-  .annecy-section {
-    background: linear-gradient(135deg, var(--forest) 0%, #1e3a0d 100%);
-    padding: 5rem 0;
-    width: 100%;
-    max-width: none;
-  }
-
-  .annecy-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-
-  .annecy-section .section-label { color: rgba(201,168,76,0.8); }
-  .annecy-section .section-title { color: var(--cream); }
-
-  .annecy-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin-top: 2.5rem;
-  }
-
-  @media (max-width: 700px) {
-    .annecy-grid { grid-template-columns: 1fr; }
-    .annecy-card[style*="span 2"] { grid-column: span 1 !important; }
-  }
-
-  .annecy-card {
-    background: rgba(245,240,232,0.08);
-    border: 1px solid rgba(245,240,232,0.15);
-    border-radius: 14px;
-    padding: 1.5rem;
-    transition: background 0.2s;
-  }
-
-  .annecy-card:hover { background: rgba(245,240,232,0.13); }
-
-  .annecy-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.75rem;
-    display: block;
-  }
-
-  .annecy-card h4 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1rem;
-    font-weight: 400;
-    color: var(--cream);
-    margin-bottom: 0.5rem;
-  }
-
-  .annecy-card p {
-    font-size: 0.82rem;
-    font-weight: 300;
-    color: rgba(245,240,232,0.6);
-    line-height: 1.6;
-  }
-
-  /* ACCOMMODATIONS */
-  .accom-list {
-    display: grid;
-    gap: 1.25rem;
-  }
-
-  .accom-card {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.4rem 1.6rem;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 1rem;
-    align-items: start;
-    transition: box-shadow 0.2s;
-  }
-
-  .accom-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.07); }
-
-  .accom-stop {
-    font-size: 0.65rem;
-    font-weight: 500;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--sage);
-    margin-bottom: 0.4rem;
-  }
-
-  .accom-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    font-weight: 400;
-    margin-bottom: 0.3rem;
-  }
-
-  .accom-desc {
-    font-size: 0.82rem;
-    font-weight: 300;
-    color: rgba(26,26,20,0.65);
-    line-height: 1.55;
-  }
-
-  .accom-rating {
-    display: flex; align-items: center; gap: 0.3rem;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--dark);
-    white-space: nowrap;
-    flex-direction: column;
-    align-items: flex-end;
-  }
-
-  .stars { color: var(--gold); font-size: 0.7rem; }
-
-  .dog-badge {
-    display: inline-flex; align-items: center; gap: 0.3rem;
-    font-size: 0.65rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 100px;
-    background: rgba(107,143,94,0.12);
-    color: var(--forest);
-    border: 1px solid rgba(107,143,94,0.25);
-  }
-
-  .annecy-link {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 500;
-    color: var(--gold);
-    text-decoration: none;
-    padding: 0.3rem 0.75rem;
-    border: 1px solid rgba(201,168,76,0.35);
-    border-radius: 6px;
-    background: rgba(201,168,76,0.08);
-    transition: background 0.2s, border-color 0.2s;
-  }
-  .annecy-link:hover { background: rgba(201,168,76,0.18); border-color: rgba(201,168,76,0.6); }
-
-  .accom-links {
-    display: flex; flex-wrap: wrap; gap: 0.4rem;
-    margin-top: 0.75rem;
-  }
-
-  .accom-link {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 500;
-    color: var(--forest);
-    text-decoration: none;
-    padding: 0.25rem 0.65rem;
-    border: 1px solid rgba(45,80,22,0.25);
-    border-radius: 6px;
-    background: var(--light-sage);
-    transition: background 0.2s;
-  }
-  .accom-link:hover { background: rgba(107,143,94,0.2); }
-
-  /* EV TIPS */
-  .ev-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-
-  .ev-card {
-    background: var(--light-sage);
-    border-radius: 12px;
-    padding: 1.25rem;
-    border-left: 3px solid var(--forest);
-  }
-
-  .ev-card h4 {
-    font-size: 0.85rem;
-    font-weight: 500;
-    margin-bottom: 0.4rem;
-    color: var(--forest);
-  }
-
-  .ev-card p {
-    font-size: 0.8rem;
-    font-weight: 300;
-    color: rgba(26,26,20,0.65);
-    line-height: 1.55;
-  }
-
-  /* OVERVIEW TABLE */
-  .overview-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-    background: white;
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-
-  .overview-table th {
-    background: var(--dark);
-    color: var(--cream);
-    padding: 0.85rem 1.2rem;
-    text-align: left;
-    font-weight: 500;
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-  }
-
-  .overview-table td {
-    padding: 0.85rem 1.2rem;
-    border-bottom: 1px solid var(--border);
-    color: rgba(26,26,20,0.8);
-    font-weight: 300;
-  }
-
-  .overview-table tr:last-child td { border-bottom: none; }
-  .overview-table tr:nth-child(even) td { background: rgba(245,240,232,0.5); }
-
-  .dest-star { color: var(--gold); font-weight: 500; }
-
-  /* FOOTER */
-  footer {
-    background: var(--dark);
-    color: rgba(245,240,232,0.4);
-    text-align: center;
-    padding: 3rem 2rem;
-    font-size: 0.8rem;
-    font-weight: 300;
-    line-height: 1.8;
-  }
-
-  footer strong { color: rgba(245,240,232,0.8); font-weight: 500; }
-
-  /* DIVIDER */
-  .divider {
-    width: 100%;
-    height: 1px;
-    background: var(--border);
-    margin: 0;
-  }
-
-  /* ANIMATIONS */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes bounce {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(-8px); }
-  }
-
-  /* Leaflet overrides */
-  .leaflet-popup-content-wrapper {
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-    font-family: 'DM Sans', sans-serif;
-  }
-  .leaflet-popup-content { margin: 0; padding: 0; }
-  .popup-inner { padding: 1rem 1.25rem; min-width: 200px; }
-  .popup-inner h3 { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 400; margin-bottom: 0.25rem; }
-  .popup-inner p { font-size: 0.8rem; color: #666; line-height: 1.5; margin-bottom: 0.5rem; }
-  .popup-night { font-size: 0.7rem; font-weight: 500; color: var(--forest); text-transform: uppercase; letter-spacing: 0.1em; }
-
-  @media (max-width: 640px) {
-    nav .nav-links { display: none; }
-    .stop-card { grid-template-columns: 6px 1fr; }
-  }
+:root{--cream:#F5F0E8;--dark:#1A1A14;--forest:#2D5016;--sage:#6B8F5E;--gold:#C9A84C;--coral:#C4614A;--light-sage:#E8EFE3;--border:rgba(26,26,20,0.12);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;}
+
+.hero{position:relative;height:100vh;min-height:600px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:var(--dark);overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(45,80,22,.4) 0%,transparent 60%),radial-gradient(ellipse at 80% 30%,rgba(58,124,165,.3) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(201,168,76,.15) 0%,transparent 50%);}
+.hero-dots{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.07) 1px,transparent 1px);background-size:32px 32px;}
+.hero-content{position:relative;z-index:2;padding:2rem;}
+.hero-tag{display:inline-block;font-size:.7rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.4);padding:.4rem 1rem;border-radius:100px;margin-bottom:2rem;opacity:0;animation:fadeUp .8s .2s forwards;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(3rem,8vw,6rem);font-weight:400;color:var(--cream);line-height:1.05;margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s .4s forwards;}
+.hero h1 em{font-style:italic;color:var(--gold);}
+.hero-sub{font-size:1rem;font-weight:300;color:rgba(245,240,232,.6);letter-spacing:.05em;margin-bottom:3rem;opacity:0;animation:fadeUp .8s .6s forwards;}
+.hero-pills{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;opacity:0;animation:fadeUp .8s .8s forwards;}
+.pill{background:rgba(245,240,232,.1);backdrop-filter:blur(8px);border:1px solid rgba(245,240,232,.2);color:var(--cream);padding:.5rem 1.25rem;border-radius:100px;font-size:.8rem;}
+.scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);color:rgba(245,240,232,.4);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;animation:bounce 2s infinite;z-index:2;}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(245,240,232,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1rem;font-style:italic;color:var(--forest);}
+.nav-links{display:flex;gap:.25rem;list-style:none;}
+.nav-links a{font-size:.8rem;font-weight:500;color:var(--dark);text-decoration:none;padding:.4rem .8rem;border-radius:6px;transition:background .2s;}
+.nav-links a:hover{background:var(--light-sage);}
+
+section{padding:5rem 2rem;max-width:1100px;margin:0 auto;}
+.section-label{font-size:.65rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--sage);margin-bottom:.75rem;}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3rem);font-weight:400;line-height:1.2;margin-bottom:1rem;}
+.section-intro{font-size:1rem;font-weight:300;color:rgba(26,26,20,.65);max-width:580px;line-height:1.7;margin-bottom:3rem;}
+.divider{width:100%;height:1px;background:var(--border);}
+
+.ov-table{width:100%;border-collapse:collapse;font-size:.85rem;background:white;border-radius:14px;overflow:hidden;border:1px solid var(--border);}
+.ov-table th{background:var(--dark);color:var(--cream);padding:.85rem 1.2rem;text-align:left;font-weight:500;font-size:.75rem;letter-spacing:.08em;}
+.ov-table td{padding:.85rem 1.2rem;border-bottom:1px solid var(--border);color:rgba(26,26,20,.8);font-weight:300;}
+.ov-table tr:last-child td{border-bottom:none;}
+.ov-table tr:nth-child(even) td{background:rgba(245,240,232,.5);}
+.dest-star{color:var(--gold);font-weight:500;}
+
+.map-section{background:var(--dark);padding:5rem 0 0;width:100%;max-width:none;}
+.map-inner{max-width:1100px;margin:0 auto;padding:0 2rem 3rem;}
+#map{width:100%;height:520px;border-radius:16px;overflow:hidden;border:1px solid rgba(245,240,232,.1);}
+
+/* STOP CARDS */
+.stops-grid{display:grid;gap:1.5rem;}
+.stop-card{background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;display:grid;grid-template-columns:6px 1fr;transition:transform .2s,box-shadow .2s;}
+.stop-card:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(0,0,0,.09);}
+.stop-side{background:var(--sage);}
+.stop-side.out{background:var(--forest);}
+.stop-side.dest{background:var(--gold);}
+.stop-side.ret{background:var(--coral);}
+.stop-body{padding:1.5rem 1.75rem;}
+.stop-meta{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;}
+.stop-day{font-size:.65rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--sage);}
+.stop-tag{font-size:.65rem;font-weight:500;padding:.2rem .6rem;border-radius:100px;background:var(--light-sage);color:var(--forest);}
+.stop-tag.dest{background:rgba(201,168,76,.15);color:#8B6914;}
+.stop-tag.ret{background:rgba(196,97,74,.12);color:var(--coral);}
+.stop-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:400;margin-bottom:.4rem;}
+.stop-km{font-size:.78rem;color:rgba(26,26,20,.45);margin-bottom:.8rem;}
+.stop-desc{font-size:.88rem;font-weight:300;color:rgba(26,26,20,.7);line-height:1.65;margin-bottom:1.1rem;}
+
+/* ACTIVITY ITEMS */
+.act-list{display:grid;gap:.8rem;margin-bottom:0;}
+.act-item{background:var(--light-sage);border-radius:10px;padding:1rem 1.2rem;border-left:3px solid var(--sage);}
+.act-item.hi{background:rgba(201,168,76,.1);border-left-color:var(--gold);}
+.act-name{font-size:.9rem;font-weight:600;margin-bottom:.3rem;}
+.act-desc{font-size:.81rem;font-weight:300;color:rgba(26,26,20,.72);line-height:1.6;margin-bottom:.5rem;}
+.act-meta{font-size:.72rem;font-weight:500;color:var(--forest);margin-bottom:.65rem;}
+
+/* CTA BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:600;text-decoration:none;padding:.48rem 1.05rem;border-radius:8px;transition:all .18s;margin:.2rem .25rem .2rem 0;}
+.btn-primary{background:var(--forest);color:white;}
+.btn-primary:hover{background:#1e3a0d;transform:translateY(-1px);}
+.btn-secondary{background:transparent;color:var(--forest);border:1.5px solid var(--forest);}
+.btn-secondary:hover{background:var(--light-sage);}
+.btn-gold{background:var(--gold);color:var(--dark);}
+.btn-gold:hover{background:#b8952d;transform:translateY(-1px);}
+.btn-wrap{display:flex;flex-wrap:wrap;gap:0;margin-top:.5rem;}
+
+/* ANNECY SECTION */
+.annecy-section{background:linear-gradient(135deg,var(--forest) 0%,#1e3a0d 100%);padding:5rem 0;width:100%;max-width:none;}
+.annecy-inner{max-width:1100px;margin:0 auto;padding:0 2rem;}
+.annecy-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;margin-top:2.5rem;}
+@media(max-width:720px){.annecy-grid{grid-template-columns:1fr;}.span2{grid-column:span 1!important;}}
+.annecy-card{background:rgba(245,240,232,.07);border:1px solid rgba(245,240,232,.15);border-radius:14px;padding:1.5rem 1.75rem;transition:background .2s;}
+.annecy-card:hover{background:rgba(245,240,232,.12);}
+.a-icon{font-size:1.6rem;margin-bottom:.75rem;display:block;}
+.annecy-card h4{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;color:var(--cream);margin-bottom:.6rem;}
+.a-desc{font-size:.83rem;font-weight:300;color:rgba(245,240,232,.65);line-height:1.65;margin-bottom:.6rem;}
+.a-list{font-size:.82rem;font-weight:300;color:rgba(245,240,232,.65);line-height:1.8;padding-left:1.1rem;margin-bottom:.7rem;}
+.a-list li strong{color:rgba(245,240,232,.9);}
+.a-meta{font-size:.75rem;font-weight:500;color:rgba(201,168,76,.9);margin-bottom:.8rem;}
+.a-btn{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:600;text-decoration:none;padding:.48rem 1.05rem;border-radius:8px;transition:all .18s;margin:.2rem .25rem .2rem 0;}
+.a-btn.gold{background:var(--gold);color:var(--dark);}
+.a-btn.gold:hover{background:#b8952d;transform:translateY(-1px);}
+.a-btn.ghost{background:rgba(245,240,232,.12);color:var(--cream);border:1px solid rgba(245,240,232,.3);}
+.a-btn.ghost:hover{background:rgba(245,240,232,.22);}
+
+/* ACCOMMODATIONS */
+.accom-list{display:grid;gap:1.25rem;}
+.accom-card{background:white;border:1px solid var(--border);border-radius:14px;padding:1.5rem 1.75rem;transition:box-shadow .2s;}
+.accom-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.07);}
+.accom-hdr{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:start;margin-bottom:.7rem;}
+.accom-stop{font-size:.65rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--sage);margin-bottom:.3rem;}
+.accom-name{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:400;margin-bottom:.25rem;}
+.accom-rating{display:flex;flex-direction:column;align-items:flex-end;gap:.3rem;white-space:nowrap;}
+.r-num{font-size:.85rem;font-weight:600;}
+.stars{color:var(--gold);font-size:.7rem;}
+.dog-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;padding:.25rem .6rem;border-radius:100px;background:rgba(107,143,94,.12);color:var(--forest);border:1px solid rgba(107,143,94,.25);}
+.accom-desc{font-size:.83rem;font-weight:300;color:rgba(26,26,20,.68);line-height:1.6;margin-bottom:.85rem;}
+
+.ev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;}
+.ev-card{background:var(--light-sage);border-radius:12px;padding:1.25rem;border-left:3px solid var(--forest);}
+.ev-card h4{font-size:.85rem;font-weight:500;margin-bottom:.4rem;color:var(--forest);}
+.ev-card p{font-size:.8rem;font-weight:300;color:rgba(26,26,20,.65);line-height:1.55;}
+
+footer{background:var(--dark);color:rgba(245,240,232,.4);text-align:center;padding:3rem 2rem;font-size:.8rem;font-weight:300;line-height:1.8;}
+footer strong{color:rgba(245,240,232,.8);font-weight:500;}
+
+.leaflet-popup-content-wrapper{border-radius:12px;font-family:'DM Sans',sans-serif;}
+.leaflet-popup-content{margin:0;padding:0;}
+.pop{padding:1rem 1.25rem;min-width:200px;}
+.pop h3{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:400;margin-bottom:.25rem;}
+.pop p{font-size:.8rem;color:#666;line-height:1.5;margin-bottom:.5rem;}
+.pop-sub{font-size:.7rem;font-weight:500;color:var(--forest);text-transform:uppercase;letter-spacing:.1em;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-8px)}}
+@media(max-width:640px){nav .nav-links{display:none;}}
 </style>
 </head>
 <body>
 
-<!-- HERO -->
 <section class="hero" id="top">
-  <div class="hero-bg"></div>
-  <div class="hero-dots"></div>
+  <div class="hero-bg"></div><div class="hero-dots"></div>
   <div class="hero-content">
     <div class="hero-tag">✦ Familjeroadtrip · Juli 2025</div>
     <h1>Tyresö till<br><em>Annecy</em></h1>
     <p class="hero-sub">2 vuxna · 2 tonåringar · 1 hund · 1 elbil · 14 dagar</p>
     <div class="hero-pills">
-      <div class="pill"><span>🗓</span> 22 juli – ca 5 aug</div>
-      <div class="pill"><span>🗺</span> Malmö · Hamburg · Schwarzwald</div>
-      <div class="pill"><span>⚡</span> Elbilanpassad rutt</div>
-      <div class="pill"><span>🐾</span> Hundvänliga stopp</div>
+      <div class="pill">🗓 22 juli – ca 5 aug</div>
+      <div class="pill">🗺 Malmö · Hamburg · Schwarzwald</div>
+      <div class="pill">⚡ Elbilanpassad rutt</div>
+      <div class="pill">🐾 Hundvänliga stopp</div>
     </div>
   </div>
   <div class="scroll-hint">↓ Scrolla</div>
 </section>
 
-<!-- NAV -->
 <nav>
   <div class="nav-logo">Annecy 2025</div>
   <ul class="nav-links">
@@ -623,26 +163,16 @@
   </ul>
 </nav>
 
-<!-- OVERVIEW TABLE -->
 <section id="oversikt">
   <div class="section-label">Reseöversikt</div>
   <h2 class="section-title">Hela resan i korthet</h2>
-  <p class="section-intro">En rundresa på 10–14 dagar via Öresund, Hamburg och Schwarzwald ned till Alperna – och hem via Lyon och Köln.</p>
-
-  <table class="overview-table">
-    <thead>
-      <tr>
-        <th>Dag</th>
-        <th>Datum</th>
-        <th>Sträcka</th>
-        <th>Km</th>
-        <th>Övernattning</th>
-      </tr>
-    </thead>
+  <p class="section-intro">Rundresa 10–14 dagar via Öresund, Hamburg och Schwarzwald ned till Alperna – och hem via Lyon och Köln.</p>
+  <table class="ov-table">
+    <thead><tr><th>Dag</th><th>Datum</th><th>Sträcka</th><th>Km</th><th>Övernattning</th></tr></thead>
     <tbody>
       <tr><td>1</td><td>Tis 22 juli</td><td>Tyresö → Malmö</td><td>~590 km</td><td>Malmö</td></tr>
       <tr><td>2</td><td>Ons 23 juli</td><td>Malmö → Hamburg</td><td>~310 km</td><td>Hamburg</td></tr>
-      <tr><td>3–4</td><td>23–24 juli</td><td>Hamburg → Schwarzwald</td><td>~580 km</td><td>Titisee (2 nätter)</td></tr>
+      <tr><td>3–4</td><td>24–25 juli</td><td>Hamburg → Schwarzwald</td><td>~580 km</td><td>Titisee (2 nätter)</td></tr>
       <tr><td>5</td><td>26 juli</td><td>Schwarzwald → Annecy</td><td>~250 km</td><td>Annecy</td></tr>
       <tr><td class="dest-star">6–9</td><td class="dest-star">27–30 juli</td><td class="dest-star">✦ Annecy – bas</td><td class="dest-star">—</td><td class="dest-star">Annecy (4–5 nätter)</td></tr>
       <tr><td>10</td><td>31 juli</td><td>Annecy → Lyon</td><td>~140 km</td><td>Lyon</td></tr>
@@ -651,689 +181,553 @@
     </tbody>
   </table>
 </section>
-
 <div class="divider"></div>
 
 <!-- MAP -->
 <div class="map-section" id="karta">
-  <div class="map-section-inner">
-    <div class="section-label">Interaktiv karta</div>
-    <h2 class="section-title" style="color:var(--cream)">Hela rutten på kartan</h2>
-    <p class="section-intro">Klicka på markörerna för mer info om varje stopp. Grön linje = utresa, orange linje = hemresa.</p>
+  <div class="map-inner">
+    <div class="section-label" style="color:rgba(201,168,76,.8);">Interaktiv karta</div>
+    <h2 class="section-title" style="color:var(--cream);">Hela rutten på kartan</h2>
+    <p class="section-intro">Klicka på markörerna för info om varje stopp. Grön linje = utresa · Orange streckad = hemresa.</p>
   </div>
-  <div style="padding: 0 2rem 4rem; max-width: 1100px; margin: 0 auto;">
-    <div id="map"></div>
-  </div>
+  <div style="padding:0 2rem 4rem;max-width:1100px;margin:0 auto;"><div id="map"></div></div>
 </div>
 
 <!-- STOPS -->
 <section id="stopp">
   <div class="section-label">Dag för dag</div>
   <h2 class="section-title">Stopp längs vägen</h2>
-  <p class="section-intro">Varje stopp är valt med tanke på aktiva upplevelser, hundvänlighet och smarta laddningsmöjligheter för elbilen.</p>
+  <p class="section-intro">Varje aktivitet har en tydlig knapp – klicka för att komma direkt till bokning eller officiell information.</p>
 
   <div class="stops-grid">
 
-    <!-- MALMÖ / KÖPENHAMN -->
-    <div class="stop-card" onclick="flyTo(55.607, 12.994, 11)">
-      <div class="stop-side outbound"></div>
+    <!-- MALMÖ -->
+    <div class="stop-card" onclick="flyTo(55.607,12.994,11)">
+      <div class="stop-side out"></div>
       <div class="stop-body">
-        <div class="stop-meta">
-          <span class="stop-day">Dag 1 · Natt 1</span>
-          <span class="stop-tag">Utresa</span>
-        </div>
+        <div class="stop-meta"><span class="stop-day">Dag 1 · Natt 1</span><span class="stop-tag">Utresa</span></div>
         <h3 class="stop-title">Malmö / Köpenhamn</h3>
         <p class="stop-km">~590 km från Tyresö · E4 söderut, Öresundsbron</p>
-        <p class="stop-desc">Ankomstdag – en lagom kort kördag med en kväll att utforska. Ta bron till Köpenhamn (20 min) och promenera längs Nyhavns färggranna kanalhus med hunden. Hundar är välkomna på uteserveringarna längs norra kajen. Tipsa tonåringarna om det danska gastronomimönstret: gourmetkorv från ett av de många heta dog-stånden är ett måste. Strollfarna i Faelledparken söder om Trianglen har inhängad hundfri löpyta. Köpenhamn är promenadvänligt och hunden kan hänga med nästan överallt utomhus.</p>
-        <div style="margin: 0.75rem 0 0.5rem; font-size:0.75rem; font-weight:500; color:var(--sage); text-transform:uppercase; letter-spacing:0.1em;">Aktiviteter</div>
-        <div class="activities" style="margin-bottom:0.9rem;">
-          <span class="activity-tag">🌉 Promenad över Öresundsbron (till fots/cykel)</span>
-          <span class="activity-tag">🐾 Nyhavn – kanalpromenad med hund</span>
-          <span class="activity-tag">🌳 Faelledparken – hundlöpyta</span>
-          <span class="activity-tag">🌷 Tivoli (hund ej tillåten inomhus)</span>
-          <span class="activity-tag">🚤 Strömma kanalbåt (hund tillåten)</span>
-          <span class="activity-tag">⚡ Laddning: Malmö C / Helsingborg E4</span>
-        </div>
-        <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
-          <a href="https://www.visitcopenhagen.com/copenhagen/planning/dogs-copenhagen" target="_blank" rel="noopener" class="accom-link">Köpenhamn med hund →</a>
-          <a href="https://www.stromma.com/en-dk/copenhagen/sightseeing/sightseeing-by-boat/" target="_blank" rel="noopener" class="accom-link">Strömma kanalbåt →</a>
+        <p class="stop-desc">Ankomstdag med lagom lång körning. Ta bron till Köpenhamn (20 min) och promenera längs Nyhavns historiska kanalhus. Hundar välkomnas på uteserveringarna längs norra kajen och i nästan alla parker. Danska gourmetkorvar från ett av stadens korvstånd är ett must.</p>
+        <div class="act-list">
+          <div class="act-item">
+            <div class="act-name">🌊 Nyhavn – kvällspromenad längs kanalen</div>
+            <div class="act-desc">Färgglada 1600-talshus längs en historisk kanal. Hunden välkommen på uteserveringarna längs norra kajen. Bäst på sen eftermiddag när kvällsstämningen sätter igång. Hans Christian Andersens hem låg längs kajen på nr 20, 67 och 18.</div>
+            <div class="act-meta">🆓 Gratis · 🐾 Hund välkommen · ⏰ Alltid öppet</div>
+            <div class="btn-wrap">
+              <a href="https://www.visitcopenhagen.com/copenhagen/planning/nyhavn-gdk410321" target="_blank" class="btn btn-primary">📍 Klicka här för mer info om Nyhavn</a>
+            </div>
+          </div>
+          <div class="act-item hi">
+            <div class="act-name">🚤 Strömma kanalbåt – hundvänlig sightseeing ⭐</div>
+            <div class="act-desc">Hundvänlig rundtur i hamnen förbi Lilla Havsfrun, Christiansborg och operan. Avgår från toppen av Nyhavn. Audio-guidad på svenska. Lugnt och familjevänligt – perfekt kvällsaktivitet efter lång kördag.</div>
+            <div class="act-meta">💰 Från 105 DKK (~150 kr) · 🐾 Hund tillåten med koppel · ⏱ 1 timme</div>
+            <div class="btn-wrap">
+              <a href="https://www.stromma.com/en-dk/copenhagen/sightseeing/sightseeing-by-boat/" target="_blank" class="btn btn-primary">🎟 Klicka här för att boka kanalbåten</a>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-name">🌳 Faelledparken – hundlöpyta & morgonrunda</div>
+            <div class="act-desc">Stor stadspark med inhägnad hundlöpyta i södra delen nära Trianglen. Breda promenadstråk, perfekt för en morgonrunda med hunden innan avfärd mot Hamburg.</div>
+            <div class="act-meta">🆓 Gratis · 🐾 Inhägnad hundlöpyta · ⏰ Alltid öppet</div>
+            <div class="btn-wrap">
+              <a href="https://www.visitcopenhagen.com/copenhagen/planning/dogs-copenhagen" target="_blank" class="btn btn-primary">🐾 Klicka här – guide för Köpenhamn med hund</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- HAMBURG -->
-    <div class="stop-card" onclick="flyTo(53.575, 10.015, 11)">
-      <div class="stop-side outbound"></div>
+    <div class="stop-card" onclick="flyTo(53.575,10.015,11)">
+      <div class="stop-side out"></div>
       <div class="stop-body">
-        <div class="stop-meta">
-          <span class="stop-day">Dag 2 · Natt 2</span>
-          <span class="stop-tag">Utresa</span>
-        </div>
+        <div class="stop-meta"><span class="stop-day">Dag 2 · Natt 2</span><span class="stop-tag">Utresa</span></div>
         <h3 class="stop-title">Hamburg</h3>
-        <p class="stop-km">~310 km från Malmö · Motorväg E45</p>
-        <p class="stop-desc">Kort kördag – ni anländer på eftermiddagen och har god tid att utforska. Hamburger Stadtpark är ett enormt parkområde (150 hektar) som är hundvänligt och har disc-golfbana med 17 hål – gratis och öppet för alla. Speicherstadt, det gamla lagerhuskvarteret på UNESCO-listan, är ett av Europas vackraste industriarv att promenera genom. Elbphilharmonie-konserthusets silhuett är häpnadsväckande sett utifrån. Miniatur Wunderland (världens största modelljärnväg) är en hit för hela familjen men hund lämnas på hotellet. Hamburgbåtturer i hamnen välkomnar hundar.</p>
-        <div style="margin: 0.75rem 0 0.5rem; font-size:0.75rem; font-weight:500; color:var(--sage); text-transform:uppercase; letter-spacing:0.1em;">Aktiviteter</div>
-        <div class="activities" style="margin-bottom:0.9rem;">
-          <span class="activity-tag">🥏 Disc golf – Stadtpark (17 hål, gratis, hundar ok)</span>
-          <span class="activity-tag">🌳 Stadtpark – hundpromenad & picknick</span>
-          <span class="activity-tag">🏛 Speicherstadt – kvarters­promenad (UNESCO)</span>
-          <span class="activity-tag">🎵 Elbphilharmonie – utsikt från Plaza (gratis)</span>
-          <span class="activity-tag">🚤 Hamntur – hundar välkomna</span>
-          <span class="activity-tag">🎮 Miniatur Wunderland (hund på hotellet)</span>
-          <span class="activity-tag">⚡ Ionity & Tesla Supercharger Hamburg</span>
-        </div>
-        <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
-          <a href="https://udisc.com/courses/hamburg-city-nord-ndIy" target="_blank" rel="noopener" class="accom-link">Disc golf Stadtpark (UDisc) →</a>
-          <a href="https://www.elbphilharmonie.de/en/plaza" target="_blank" rel="noopener" class="accom-link">Elbphilharmonie Plaza (gratis) →</a>
-          <a href="https://www.miniatur-wunderland.de/en/" target="_blank" rel="noopener" class="accom-link">Miniatur Wunderland →</a>
-          <a href="https://www.hamburg-travel.com/discover-hamburg/hamburg-for/families/" target="_blank" rel="noopener" class="accom-link">Hamburg för familjer →</a>
+        <p class="stop-km">~310 km från Malmö · Motorväg E45 · Ankomst tidigt eftermiddag</p>
+        <p class="stop-desc">Kort kördag – ni är framme redan på eftermiddagen och har god tid att utforska. Hamburg är en av Europas vackraste hamnstäder med kanaler, rödtegel och en unik musikscen.</p>
+        <div class="act-list">
+          <div class="act-item hi">
+            <div class="act-name">🥏 Disc Golf – Stadtpark City Nord (17 hål) ⭐</div>
+            <div class="act-desc">Gratis disc-golfbana med 17 hål i parken precis norr om Stadtpark. Helt hundvänlig zon – hunden kan springa fritt. Nå banan via U-bahn Sengelmannstraße eller promenad genom det gigantiska Stadtpark (150 ha). Köp discar i sportaffär i förväg.</div>
+            <div class="act-meta">🆓 Helt gratis · 🐾 Hund välkommen · ⏱ 1–2 timmar · Discar behövs</div>
+            <div class="btn-wrap">
+              <a href="https://udisc.com/courses/hamburg-city-nord-ndIy" target="_blank" class="btn btn-primary">🗺 Klicka här för banakarta & info</a>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-name">🏛 Speicherstadt – UNESCO-kvarteret vid kanalen</div>
+            <div class="act-desc">Röda tegelbyggnader från 1800-talet längs kanaler – Europas största sammanhängande lagerhusmiljö och UNESCO-världsarv sedan 2015. Promenera fritt längs kajer och broar. Hundar välkomna utomhus. Angränsande HafenCity är modern kontrast. I området: Miniatur Wunderland (världens största modelljärnväg) – hund lämnas på hotellet.</div>
+            <div class="act-meta">🆓 Gratis promenad · 🐾 Hund utomhus · Miniatur Wunderland: ~20 €</div>
+            <div class="btn-wrap">
+              <a href="https://www.speicherstadt.com/en/" target="_blank" class="btn btn-primary">📍 Klicka här – Speicherstadt info</a>
+              <a href="https://www.miniatur-wunderland.de/en/" target="_blank" class="btn btn-secondary">🚂 Klicka här – Miniatur Wunderland (boka)</a>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-name">🎵 Elbphilharmonie Plaza – gratis utsikt 37 m upp</div>
+            <div class="act-desc">Åk upp till den publika Plaza på 8:e våningen av Hamburgs ikoniska konserthus för en 360°-panoramautsikt över hamnen och Elbe. Helt gratis men måste bokas online i förväg – fyllda snabbt under högsäsong. Hund ej i byggnaden.</div>
+            <div class="act-meta">🆓 Gratis · ⚠️ Boka online i förväg · 🐾 Hund ej i byggnaden</div>
+            <div class="btn-wrap">
+              <a href="https://www.elbphilharmonie.de/en/plaza" target="_blank" class="btn btn-primary">🎟 Klicka här – boka gratis Plaza-besök</a>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-name">🚤 Hamntur – hundvänlig rundtur</div>
+            <div class="act-desc">Containerhamnen är en av Europas största. Hundvänliga hamnrundturer avgår från St. Pauli Landungsbrücken. Stora containerskepp, historiska kajer och dramatisk industrilandskap. Guidade turer på engelska tillgängliga.</div>
+            <div class="act-meta">💰 Från ~20 € · 🐾 Hund tillåten · ⏱ 1–2 timmar</div>
+            <div class="btn-wrap">
+              <a href="https://www.hamburg-travel.com/see-explore/excursions/harbour-tours/" target="_blank" class="btn btn-primary">🚤 Klicka här – boka hamntur</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- SCHWARZWALD -->
-    <div class="stop-card" onclick="flyTo(47.895, 8.139, 11)">
-      <div class="stop-side outbound"></div>
+    <div class="stop-card" onclick="flyTo(47.895,8.139,11)">
+      <div class="stop-side out"></div>
       <div class="stop-body">
-        <div class="stop-meta">
-          <span class="stop-day">Dag 3–4 · Natt 3–4</span>
-          <span class="stop-tag">Utresa</span>
-        </div>
+        <div class="stop-meta"><span class="stop-day">Dag 3–4 · Natt 3–4</span><span class="stop-tag">Utresa</span></div>
         <h3 class="stop-title">Schwarzwald / Titisee</h3>
-        <p class="stop-km">~580 km från Hamburg · Dela upp med lunchladdning i Kassel eller Frankfurt</p>
-        <p class="stop-desc">Schwarzwald vid Titisee är ett fullpackat äventyrsstopp för aktiva familjer. Titisee är en klarblå bergsjö med badstrand, beachvolleyboll och paddelbåtar. Feldberg (1 493 m, Schwarzwalds högsta punkt) nås med gondol och har sommarrodelbana – en enorm hit för tonåringar. Triberg har Tysklands näst högsta vattenfall (97 m) med en lätt och härlig vandringsled. I Fundorena på Feldberg finns inomhus-klätterpark och trampolin vid dåligt väder. Familjeparken Steinwasenpark (30 min) erbjuder Europas längsta hängbro och djur i naturmiljö.</p>
-        <div style="margin: 0.75rem 0 0.5rem; font-size:0.75rem; font-weight:500; color:var(--sage); text-transform:uppercase; letter-spacing:0.1em;">Aktiviteter</div>
-        <div class="activities" style="margin-bottom:0.9rem;">
-          <span class="activity-tag">🛷 Sommarrodelbana Feldberg (tonårsfavorit!)</span>
-          <span class="activity-tag">🚠 Gondoltur till Feldberg-toppen</span>
-          <span class="activity-tag">🏊 Badstrand Titisee – beachvolleyboll & paddelbåt</span>
-          <span class="activity-tag">💧 Triberg vattenfall – 97 m, lätt vandring</span>
-          <span class="activity-tag">🥾 Feldberg-Steig premiumled (hund ok)</span>
-          <span class="activity-tag">🏋 Fundorena – klätterpark & trampolin (regn)</span>
-          <span class="activity-tag">🌉 Steinwasenpark – världens längsta hängbro</span>
-          <span class="activity-tag">⚡ Ionity Freiburg (snabbladdning)</span>
-        </div>
-        <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
-          <a href="https://www.hochschwarzwald.de/en/things-to-do/attractions/family-attractions/summer-toboggan-runs" target="_blank" rel="noopener" class="accom-link">Sommarrodelbana Feldberg →</a>
-          <a href="https://www.hochschwarzwald.de/en/things-to-do/attractions/family-attractions" target="_blank" rel="noopener" class="accom-link">Familjeaktiviteter Schwarzwald →</a>
-          <a href="https://www.steinwasenpark.de/" target="_blank" rel="noopener" class="accom-link">Steinwasenpark →</a>
-          <a href="https://www.hochschwarzwald.de/reisemagazin/alle-geschichten/familie/titisee-mit-kindern-die-besten-tipps" target="_blank" rel="noopener" class="accom-link">Titisee med familj →</a>
+        <p class="stop-km">~580 km från Hamburg · Dela upp med lunchladdning vid Kassel eller Frankfurt</p>
+        <p class="stop-desc">Schwarzwald vid Titisee är ett fullpackat äventyrsstopp. Titisee är en klarblå bergsjö med badstrand och vattensport. Feldberg (1 493 m) är Schwarzwalds högsta punkt. Triberg har ett av Tysklands mest imponerande vattenfall. Två nätter är knappt – prioritera rodelbanan och simningen.</p>
+        <div class="act-list">
+          <div class="act-item hi">
+            <div class="act-name">🛷 Sommarrodelbana Feldberg ⭐ Tonårsfavorit</div>
+            <div class="act-desc">En av Schwarzwalds bästa sommarrodelbanas – styr­bara rodlar längs en lång nedförsbacke med fantastisk utsikt. Kombinera gärna med gondolturen upp till Feldberg-toppen (1 450 m) för panoramautsikt – vid klart väder syns Alperna. Familjer med tonåringar älskar detta stopp.</div>
+            <div class="act-meta">💰 Rodelbana: ~8–12 € per åkning · Gondol: ~18 €/vuxen · Öppet maj–okt · 🐾 Hund ej på gondol</div>
+            <div class="btn-wrap">
+              <a href="https://www.hochschwarzwald.de/en/things-to-do/attractions/family-attractions/summer-toboggan-runs" target="_blank" class="btn btn-primary">🛷 Klicka här – info & öppettider rodelbana</a>
+              <a href="https://www.feldberg-schwarzwald.de/" target="_blank" class="btn btn-secondary">⛰ Klicka här – Feldberg officiell info</a>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-name">🏊 Badstrand Titisee – simning, SUP & vattensport</div>
+            <div class="act-desc">En av Tysklands vackraste badsjöar med klart vatten, sandstrand, beachvolleyboll och paddelbåtshyra. SUP-uthyrning på angränsande Windgfällweiher är populärt. Hundstrand finns i norra delen av sjön – kolla skyltar på plats.</div>
+            <div class="act-meta">🆓 Gratis badstrand · 💰 Paddelbåt ~10 €/tim · 🐾 Hundstrand i norr</div>
+            <div class="btn-wrap">
+              <a href="https://www.hochschwarzwald.de/reisemagazin/alle-geschichten/familie/titisee-mit-kindern-die-besten-tipps" target="_blank" class="btn btn-primary">📍 Klicka här – Titisee med familj (guide)</a>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-name">💧 Triberg vattenfall – 97 m, lätt vandring</div>
+            <div class="act-desc">Ett av Tysklands mäktigaste vattenfall med välröjd tur-/returled på ca 2 km. Häpnadsväckande – sjufaldigt fall på 97 meter. Hunden välkommen med koppel. I Triberg centrum: världens tätaste samling kukuursur och svart­skogsmat att prova.</div>
+            <div class="act-meta">💰 Inträde ~4–6 € · ⏱ 2–3 timmar · 🐾 Hund med koppel</div>
+            <div class="btn-wrap">
+              <a href="https://www.triberg.de/erleben/wasserfaelle" target="_blank" class="btn btn-primary">📍 Klicka här – Triberg vattenfall info & priser</a>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-name">🌉 Steinwasenpark – Europas längsta hängbro</div>
+            <div class="act-desc">Familjepark 30 min från Titisee med Europas längsta hängbro (186 m!), djur i naturmiljö (hjortar, vargar, bison), klätterparcours och sommarrodelbana. Räkna med en halv dag. Hund välkommen med koppel.</div>
+            <div class="act-meta">💰 Vuxna ~15 € · Barn 4–14 år ~8 € · 🐾 Hund tillåten · ⏱ Halv–hel dag</div>
+            <div class="btn-wrap">
+              <a href="https://www.steinwasenpark.de/" target="_blank" class="btn btn-primary">🎟 Klicka här – Steinwasenpark biljetter & info</a>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-name">🏋 Fundorena – klätterpark & trampolin (regndags­alternativ)</div>
+            <div class="act-desc">Inomhusäventyrscenter på Feldberg med indoor-klätterpark, stor trampolinhall och bouldervägg. Perfekt om vädret vänder. Ingår delvis i Hochschwarzwald Card om ni bokar hotell med kortet.</div>
+            <div class="act-meta">💰 ~10–15 € per aktivitet · 🐾 Hund ej inomhus</div>
+            <div class="btn-wrap">
+              <a href="https://www.hochschwarzwald.de/en/things-to-do/attractions/family-attractions" target="_blank" class="btn btn-primary">📍 Klicka här – alla familjeattraktioner Schwarzwald</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ANNECY -->
-    <div class="stop-card" style="border-color: var(--gold);" onclick="flyTo(45.900, 6.124, 12)">
-      <div class="stop-side destination"></div>
+    <!-- ANNECY CARD -->
+    <div class="stop-card" style="border-color:var(--gold);" onclick="flyTo(45.900,6.124,12)">
+      <div class="stop-side dest"></div>
       <div class="stop-body">
-        <div class="stop-meta">
-          <span class="stop-day">Dag 5–9 · Natt 5–9</span>
-          <span class="stop-tag destination">✦ Destination</span>
-        </div>
+        <div class="stop-meta"><span class="stop-day">Dag 5–9 · Natt 5–9</span><span class="stop-tag dest">✦ Destination</span></div>
         <h3 class="stop-title">Annecy, Frankrike</h3>
         <p class="stop-km">~250 km från Schwarzwald · Via Basel och Genève</p>
-        <p class="stop-desc">Alpernas Venedig – Europas renaste sjö omgiven av snöklädda bergstoppar. 4–5 nätter som bas med ett fullpackat aktivitetsprogram. Se hela Annecy-sektionen nedan för detaljerad info om varje aktivitet med bokningslänkar.</p>
-        <div class="activities">
-          <span class="activity-tag">🪂 Paragliding Col de la Forclaz</span>
-          <span class="activity-tag">🧗 Via ferrata (flera leder)</span>
-          <span class="activity-tag">🚣 Kajak & SUP på sjön</span>
-          <span class="activity-tag">🚴 Cykelrunda 40 km runt sjön</span>
-          <span class="activity-tag">🏰 Gamla stan & Château d'Annecy</span>
-          <span class="activity-tag">🌊 Gorges du Fier</span>
-          <span class="activity-tag">🐾 Plage du Bout-du-Lac</span>
+        <p class="stop-desc">Alpernas Venedig – Europas renaste sjö omgiven av snöklädda toppar. Se den detaljerade Annecy-sektionen nedan för alla 8 aktiviteter med fullständig info och direktlänkar till bokning.</p>
+        <div class="btn-wrap" style="margin-top:.5rem;">
+          <a href="#annecy" class="btn btn-gold">✦ Klicka här – gå till Annecy-sektionen ↓</a>
         </div>
       </div>
     </div>
 
     <!-- LYON -->
-    <div class="stop-card" onclick="flyTo(45.759, 4.831, 11)">
-      <div class="stop-side return"></div>
+    <div class="stop-card" onclick="flyTo(45.759,4.831,11)">
+      <div class="stop-side ret"></div>
       <div class="stop-body">
-        <div class="stop-meta">
-          <span class="stop-day">Dag 10 · Natt 10</span>
-          <span class="stop-tag return">Hemresa</span>
-        </div>
+        <div class="stop-meta"><span class="stop-day">Dag 10 · Natt 10</span><span class="stop-tag ret">Hemresa</span></div>
         <h3 class="stop-title">Lyon</h3>
-        <p class="stop-km">~140 km från Annecy · Motorväg A41/A42</p>
-        <p class="stop-desc">Frankrikes gastronomihuvudstad och en av Europas vackraste gamla stadskärnor – utsedd till UNESCO-världsarv. Utforska de hemliga traboules: medeltida passager som löper genom byggnader och innergårdar, ursprungligen använda av silkesarbetare och under WWII av motståndsrörelsen. Det finns ca 40 öppna för allmänheten – leta efter bronsskölden på dörrama (öppna 07:00–21:00). Parc de la Tête d'Or är ett av Frankrikes största stadsparker med lång sjöstrand, zoo och botanisk trädgård – helt gratis och hundvänligt med koppel. Lyon är hundvänligt: hundar välkomnas på restaurangterrasser, i caféer och på de flesta utomhusytor.</p>
-        <div style="margin: 0.75rem 0 0.5rem; font-size:0.75rem; font-weight:500; color:var(--sage); text-transform:uppercase; letter-spacing:0.1em;">Aktiviteter</div>
-        <div class="activities" style="margin-bottom:0.9rem;">
-          <span class="activity-tag">🚶 Traboules – hemliga gångar i Vieux Lyon</span>
-          <span class="activity-tag">🏛 Vieux Lyon – UNESCO-stadsdel</span>
-          <span class="activity-tag">🌳 Parc de la Tête d'Or – hundvänlig (gratis)</span>
-          <span class="activity-tag">🍽 Bouchons – traditionella lyonska krogar</span>
-          <span class="activity-tag">⛰ Fourvière-kullen – utsikt över hela Lyon</span>
-          <span class="activity-tag">🌊 Rhônepromenaden – långpromenad med hund</span>
-          <span class="activity-tag">⚡ Ionity / Tesla Lyon</span>
-        </div>
-        <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
-          <a href="https://en.visiterlyon.com/practical-lyon/good-tips/lyon-with-a-dog" target="_blank" rel="noopener" class="accom-link">Lyon officiellt hundguide →</a>
-          <a href="https://en.visiterlyon.com/discover/heritage-unesco/lyon-s-traboules-and-courtyards" target="_blank" rel="noopener" class="accom-link">Traboules – officiell guide →</a>
-          <a href="https://en.visiterlyon.com/discover/lyon-the-way-you-like-it/as-a-family/10-must-do-activities-with-kids-in-lyon" target="_blank" rel="noopener" class="accom-link">Lyon med familj →</a>
+        <p class="stop-km">~140 km från Annecy · A41/A42 · Lagom kördag</p>
+        <p class="stop-desc">Frankrikes gastronomihuvudstad och UNESCO-världsarv. Vieux Lyon är ett av Europas bäst bevarade renässanskvarter. Hundar är välkomna på restaurangterrasser, i caféer och i nästan alla parker. Promenadvänligt och unikt – perfekt sista stopp i Frankrike.</p>
+        <div class="act-list">
+          <div class="act-item hi">
+            <div class="act-name">🚶 Traboules – Lyons hemliga medeltida passager ⭐</div>
+            <div class="act-desc">Gångvägar som löper genom byggnader, innergårdar och spiraltrappor i Vieux Lyon och Croix-Rousse. Ursprungligen använda av silkesarbetare och under WWII av motståndsrörelsen. Ca 40 är öppna för allmänheten 07:00–21:00 – leta efter bronsskölden på dörrarna (tryck bara upp dem). Den längsta traboule: 54 Rue Saint-Jean → 27 Rue du Bœuf. Hunden kan följa med.</div>
+            <div class="act-meta">🆓 Gratis att gå själv · ⏰ Öppet 07:00–21:00 · 🐾 Hund välkommen · Guidad tur: ~15 €</div>
+            <div class="btn-wrap">
+              <a href="https://en.visiterlyon.com/discover/heritage-unesco/lyon-s-traboules-and-courtyards" target="_blank" class="btn btn-primary">🗺 Klicka här – karta & guide till traboules</a>
+              <a href="https://en.visiterlyon.com/book/guided-tours" target="_blank" class="btn btn-secondary">🎟 Klicka här – boka guidad tur</a>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-name">🌳 Parc de la Tête d'Or – hundvänlig storpark (gratis)</div>
+            <div class="act-desc">Ett av Frankrikes största stadsparker (105 ha) med sjö, gratis zoo, botanisk trädgård och vida promenadstråk. Hundvänligt med koppel – agilityytor för hundar finns på plats. Perfekt morgonrunda innan hemfärd mot Köln.</div>
+            <div class="act-meta">🆓 Gratis · ⏰ 06:00–22:30 · 🐾 Hund tillåten med koppel</div>
+            <div class="btn-wrap">
+              <a href="https://en.visiterlyon.com/practical-lyon/good-tips/lyon-with-a-dog" target="_blank" class="btn btn-primary">🐾 Klicka här – Lyon med hund (officiell guide)</a>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-name">🍽 Bouchon Lyonnais – äkta lyonsk matupplevelse</div>
+            <div class="act-desc">En bouchon är en traditionell liten krog med hemlagad lyonsk mat – quenelle, andouillette och tarte à la praline är klassiker. Lyon har fler Michelinstjärnor per capita än Paris. Boka bord i förväg – populäraste ställena är fullsatta i juli. Uteserveringar hundvänliga.</div>
+            <div class="act-meta">💰 Meny från ~20–35 €/person · 🐾 Hund på terrassen · ⚠️ Boka i förväg</div>
+            <div class="btn-wrap">
+              <a href="https://en.visiterlyon.com/eat-drink/restaurants/bienvenue-dans-les-bouchons-lyonnais" target="_blank" class="btn btn-primary">🍽 Klicka här – hitta äkta bouchon</a>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-name">⛰ Fourvière-kullen & romerska teatrar</div>
+            <div class="act-desc">Ta funiculairen (bergbanan) upp till Basilica Notre-Dame de Fourvière för magisk utsikt över Lyon med Alperna i horisonten. Intill kullen: romerska teatrar från 15 f.Kr. – fortfarande i bruk! Hundvänliga promenadstråk runt kullen.</div>
+            <div class="act-meta">💰 Funiculaire ~2 € · Basilica gratis · 🐾 Hund tillåten utomhus</div>
+            <div class="btn-wrap">
+              <a href="https://en.visiterlyon.com/discover/sights-monuments/fourviere-hill" target="_blank" class="btn btn-primary">📍 Klicka här – Fourvière info</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- KÖLN -->
-    <div class="stop-card" onclick="flyTo(50.937, 6.958, 11)">
-      <div class="stop-side return"></div>
+    <div class="stop-card" onclick="flyTo(50.937,6.958,11)">
+      <div class="stop-side ret"></div>
       <div class="stop-body">
-        <div class="stop-meta">
-          <span class="stop-day">Dag 11 · Natt 11</span>
-          <span class="stop-tag return">Hemresa</span>
-        </div>
+        <div class="stop-meta"><span class="stop-day">Dag 11 · Natt 11</span><span class="stop-tag ret">Hemresa</span></div>
         <h3 class="stop-title">Köln</h3>
         <p class="stop-km">~620 km från Lyon · A6/A5 norrut via Beaune och Frankfurt</p>
-        <p class="stop-desc">Kvällsankomst till Köln. Kölner Dom – den gotiska katedralen som är Tysklands mest besökta sevärdheten – lyser dramatiskt upp skyline och är gratis att se utifrån. Rhenpromenaden är bred, öppen och perfekt för en lång kvällspromenad med hunden. Om ni har energi: Rheinauhafen, det moderna hamnkvarteret med kranhusen, är stämningsfullt på kvällen. Nästa dag: sista körning norrut mot Malmö och hem till Tyresö.</p>
-        <div style="margin: 0.75rem 0 0.5rem; font-size:0.75rem; font-weight:500; color:var(--sage); text-transform:uppercase; letter-spacing:0.1em;">Aktiviteter</div>
-        <div class="activities" style="margin-bottom:0.9rem;">
-          <span class="activity-tag">⛪ Kölner Dom – gratis utifrån, torn €6</span>
-          <span class="activity-tag">🌊 Rhenpromenaden – hundvänlig kvällspromenad</span>
-          <span class="activity-tag">🏗 Rheinauhafen – moderna kranhus</span>
-          <span class="activity-tag">🍺 Kölsch – prova direkt från bryggeriet</span>
-          <span class="activity-tag">⚡ Ionity / Fastned Köln</span>
-        </div>
-        <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
-          <a href="https://www.cologne-tourism.com/discover/sights/cologne-cathedral/" target="_blank" rel="noopener" class="accom-link">Kölner Dom officiell info →</a>
-          <a href="https://www.cologne-tourism.com/" target="_blank" rel="noopener" class="accom-link">Kölns turistbyrå →</a>
+        <p class="stop-desc">Kvällsankomst till Köln efter en lång kördag. Kölner Dom lyser dramatiskt upp kvällshimlen. Rhenpromenaden är bred och öppen – perfekt med hunden. Nästa dag: sista sträckan norrut hem till Tyresö.</p>
+        <div class="act-list">
+          <div class="act-item hi">
+            <div class="act-name">⛪ Kölner Dom – Europas mäktigaste gotiska katedral ⭐</div>
+            <div class="act-desc">Byggd under 632 år (1248–1880) och Tysklands mest besökta sevärdhet med 6 miljoner besökare per år. Gratis att se utifrån och häpnadsväckande på kvällen med belysning. Klättra torntrappan (533 trappsteg, 97 m) för utsikt över Köln och Rhen – ett äventyr för tonåringarna. Hund ej inomhus.</div>
+            <div class="act-meta">🆓 Gratis utifrån · 💰 Torn: ~6 €/person · ⏰ Dom öppet 06:00–21:00 · 🐾 Hund utomhus</div>
+            <div class="btn-wrap">
+              <a href="https://www.koelner-dom.de/en/" target="_blank" class="btn btn-primary">⛪ Klicka här – Kölner Dom officiell info</a>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-name">🌊 Rhenpromenaden & Rheinauhafen</div>
+            <div class="act-desc">Bred promenad längs Rhen – perfekt med hund på kvällen. Rheinauhafen är det moderna hamnkvarteret med de ikoniska kranhusen (Kranhäuser) som speglar sig i floden. Stämningsfullt och fotogeniskt. Alla utomhusytor hundvänliga.</div>
+            <div class="act-meta">🆓 Gratis · 🐾 Hund välkommen · ⏰ Alltid öppet</div>
+            <div class="btn-wrap">
+              <a href="https://www.cologne-tourism.com/discover/sights/rhine-boulevard-and-rheinauhafen/" target="_blank" class="btn btn-primary">📍 Klicka här – Rhen & Rheinauhafen info</a>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-name">🍺 Kölsch – prova direkt från bryggeriet</div>
+            <div class="act-desc">Kölsch serveras alltid i 0,2 liters smala glas (Stangen) och är strikt lokal specialitet. Früh am Dom och Gaffel am Dom är klassiska bryggeripubar precis vid katedralen. Uteserveringarna är hundvänliga – perfekt avslutning på resan.</div>
+            <div class="act-meta">💰 Kölsch ~3–4 €/glas · 🐾 Uteservering hundvänlig</div>
+            <div class="btn-wrap">
+              <a href="https://www.frueh.de/en/home/" target="_blank" class="btn btn-primary">🍺 Klicka här – Früh am Dom (bokningsinfo)</a>
+              <a href="https://www.cologne-tourism.com/" target="_blank" class="btn btn-secondary">📍 Klicka här – Kölns turistbyrå</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
   </div>
 </section>
-
 <div class="divider"></div>
 
-<!-- ANNECY HIGHLIGHT -->
+<!-- ANNECY -->
 <div class="annecy-section" id="annecy">
   <div class="annecy-inner">
     <div class="section-label">✦ Huvuddestinationen</div>
-    <h2 class="section-title" style="color:var(--cream); margin-bottom: 0.5rem;">Annecy – 4–5 nätter</h2>
-    <p style="color:rgba(245,240,232,0.55); font-size:0.95rem; font-weight:300; line-height:1.7; max-width:620px; margin-bottom:2rem;">
-      Europas renaste sjö, dramatiska alpkulisser och en medeltida gammal stad med kanaler. Perfekt bas för en aktiv familj med hund.
-    </p>
-
+    <h2 class="section-title">Annecy – 4–5 nätter</h2>
+    <p style="color:rgba(245,240,232,.55);font-size:.95rem;font-weight:300;line-height:1.7;max-width:620px;margin-bottom:2.5rem;">Europas renaste sjö, dramatiska alpkulisser och en medeltida gammal stad med kanaler. Varje aktivitet nedan har tydlig knapp för bokning eller mer information.</p>
     <div class="annecy-grid">
 
       <!-- PARAGLIDING -->
-      <div class="annecy-card" style="grid-column: span 2;">
-        <span class="annecy-icon">🪂</span>
+      <div class="annecy-card span2" style="grid-column:span 2;">
+        <span class="a-icon">🪂</span>
         <h4>Paragliding från Col de la Forclaz</h4>
-        <p style="margin-bottom:0.75rem;">Col de la Forclaz är ett av Europas mest kända startfält för paragliding – internationella tävlingar hålls här varje år. Tandemflyg med certifierad instruktör kräver inga förkunskaper. Ni tar minibuss upp till startplatsen på 1 250 m höjd, springer några steg och lyfter sedan ut över den turkosa sjön med Mont Blanc i horisonten. Flygtiden är 10–20 min för standardpaketet. Landningen sker i Doussard vid sjöns sydände.</p>
-        <p style="margin-bottom:1rem; color:rgba(245,240,232,0.5); font-size:0.78rem;"><strong style="color:rgba(245,240,232,0.75);">Ålder & pris:</strong> Från 5 år. Standardflyg från ~95 €/person. Foto/video-paket +30 €. Boka i god tid – juli/aug är fullbokat snabbt! <strong style="color:rgba(245,240,232,0.75);">14-åringen:</strong> Minsta ålder är 14 år hos de flesta aktörer ✓</p>
-        <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-          <a href="https://www.parapente-annecy.fr/en/home/" target="_blank" rel="noopener" class="annecy-link">Parapente Annecy →</a>
-          <a href="https://en.k2parapente.com/paragliding-tandem-flights-annecy/" target="_blank" rel="noopener" class="annecy-link">K2 Parapente →</a>
-          <a href="https://annecy.takamaka.fr/en/p/paragliding-annecy" target="_blank" rel="noopener" class="annecy-link">Takamaka Annecy →</a>
-          <a href="https://www.checkyeti.com/en/paragliding/france/col-de-la-forclaz/paragliding" target="_blank" rel="noopener" class="annecy-link">Jämför aktörer (CheckYeti) →</a>
+        <p class="a-desc">Col de la Forclaz är ett av Europas mest kända startfält – internationella tävlingar hålls här varje år. Ni tar minibuss upp till startplatsen (1 250 m höjd), springer några steg och lyfter ut över den turkosa sjön med Mont Blanc i horisonten. Tandemflyg med certifierad instruktör – ingen erfarenhet krävs. Flygtiden är 10–20 min (standard) upp till 40 min (prestige-paket). Landning i Doussard vid sjöns sydände. Foto/video-paket kan köpas till.</p>
+        <p class="a-desc"><strong style="color:rgba(245,240,232,.85);">👶 Ålderskrav:</strong> Från 5 år. 14-åringen kan flyga! Minimivikt 20 kg, maximivikt 110 kg.</p>
+        <div class="a-meta">⏱ Ca 1–2 timmar totalt · 💰 Standard från 95 €/person · 📸 Foto/video-paket +30 € · ⚠️ Boka i förväg – fullbokat snabbt i juli/aug!</div>
+        <div>
+          <a href="https://www.parapente-annecy.fr/en/home/" target="_blank" class="a-btn gold">🎟 Klicka här – boka Parapente Annecy</a>
+          <a href="https://en.k2parapente.com/paragliding-tandem-flights-annecy/" target="_blank" class="a-btn gold">🎟 Klicka här – boka K2 Parapente</a>
+          <a href="https://annecy.takamaka.fr/en/p/paragliding-annecy" target="_blank" class="a-btn gold">🎟 Klicka här – boka Takamaka</a>
+          <a href="https://www.checkyeti.com/en/paragliding/france/col-de-la-forclaz/paragliding" target="_blank" class="a-btn ghost">📊 Klicka här – jämför alla aktörer & priser</a>
         </div>
       </div>
 
       <!-- VIA FERRATA -->
-      <div class="annecy-card" style="grid-column: span 2;">
-        <span class="annecy-icon">🧗</span>
-        <h4>Via ferrata</h4>
-        <p style="margin-bottom:0.75rem;">Via ferrata är klättring längs berg­väggar utrustade med kablar, järnsteg, stegar och hängbroar – perfekt för aktiva tonåringar och vuxna utan klätter­erfarenhet. Utrustning (sele, hjälm, via ferrata-kit) ingår när man bokar med guide. Det finns leder i flera svårighetsgrader nära Annecy:</p>
-        <ul style="color:rgba(245,240,232,0.65); font-size:0.82rem; line-height:1.8; margin-bottom:1rem; padding-left:1.2rem;">
-          <li><strong style="color:rgba(245,240,232,0.85);">La Sambuy</strong> – Lätt–medel, 70 m höjdskillnad, inkl. lift upp. Familjevänlig från 9 år. Fantastisk utsikt över Lac d'Annecy och Mont Blanc.</li>
-          <li><strong style="color:rgba(245,240,232,0.85);">Roc de Cornillon</strong> – Medel, hängbroar och spektakulär utsikt över Lac du Bourget. 25 min från Annecy.</li>
-          <li><strong style="color:rgba(245,240,232,0.85);">Thônes</strong> – Mer utmanande, atletisk led med 3 överhäng. 20 min från Annecy. Perfekt för de sportiga.</li>
-          <li><strong style="color:rgba(245,240,232,0.85);">Via-Tyro (privat led)</strong> – Klättring + zipline + hängbroar direkt ovan sjön. Roligast för tonåringar.</li>
+      <div class="annecy-card span2" style="grid-column:span 2;">
+        <span class="a-icon">🧗</span>
+        <h4>Via ferrata – klättring längs bergsväggar</h4>
+        <p class="a-desc">Via ferrata är klättring längs bergväggar utrustade med kablar, järnsteg, stegar och hängbroar. Perfekt för aktiva tonåringar utan klättererfarenhet. Sele, hjälm och kit ingår alltid med guide. Välj led efter ambitionsnivå:</p>
+        <ul class="a-list">
+          <li><strong>La Sambuy (lätt)</strong> – 70 m höjdskillnad, lift upp ingår, familjevänlig från 9 år. Utsikt mot sjön och Mont Blanc. <em>Rekommenderas för er!</em></li>
+          <li><strong>Roc de Cornillon (medel)</strong> – Hängbroar och luftiga passager. Spektakulär utsikt mot Lac du Bourget. 25 min från Annecy.</li>
+          <li><strong>Thônes (utmanande)</strong> – Atletisk led med 3 överhäng. För de sportiga i familjen. 20 min från Annecy.</li>
+          <li><strong>Via-Tyro (privat led)</strong> – Klättring + zipline + hängbroar med utsikt direkt ovan sjön. Populärast bland tonåringar.</li>
         </ul>
-        <p style="color:rgba(245,240,232,0.5); font-size:0.78rem; margin-bottom:1rem;"><strong style="color:rgba(245,240,232,0.75);">Pris:</strong> Från ~44–60 €/person med guide. <strong style="color:rgba(245,240,232,0.75);">Ålder:</strong> Från 8–9 år beroende på led.</p>
-        <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-          <a href="https://www.checkyeti.com/en/d/1108/20918" target="_blank" rel="noopener" class="annecy-link">Boka La Sambuy (CheckYeti) →</a>
-          <a href="https://www.funbooker.com/en/category/via-ferrata/annecy" target="_blank" rel="noopener" class="annecy-link">Alla leder (Funbooker) →</a>
-          <a href="https://www.annecyguidesmontagne.com/via-ferrata" target="_blank" rel="noopener" class="annecy-link">Bureau des guides d'Annecy →</a>
-          <a href="https://www.activ-annecy.fr/activites/montagne-nature/via-ferrata-annecy/" target="_blank" rel="noopener" class="annecy-link">Activ'Annecy →</a>
+        <div class="a-meta">⏱ 3–4 timmar · 👶 Från 8–9 år beroende på led · 💰 Från 44–60 €/person med guide · All utrustning ingår</div>
+        <div>
+          <a href="https://www.checkyeti.com/en/d/1108/20918" target="_blank" class="a-btn gold">🎟 Klicka här – boka La Sambuy med guide</a>
+          <a href="https://www.annecyguidesmontagne.com/via-ferrata" target="_blank" class="a-btn gold">🎟 Klicka här – Bureau des Guides d'Annecy</a>
+          <a href="https://www.funbooker.com/en/category/via-ferrata/annecy" target="_blank" class="a-btn ghost">📊 Klicka här – jämför alla leder & priser</a>
+          <a href="https://www.activ-annecy.fr/activites/montagne-nature/via-ferrata-annecy/" target="_blank" class="a-btn ghost">📍 Klicka här – Activ'Annecy info</a>
         </div>
       </div>
 
-      <!-- KAJAK & SUP -->
+      <!-- KAJAK -->
       <div class="annecy-card">
-        <span class="annecy-icon">🚣</span>
-        <h4>Kajak & SUP</h4>
-        <p style="margin-bottom:0.75rem;">Lac d'Annecy är Europas renaste insjö – kristallklart turkost vatten. Kajaker (upp till 3 pers.), SUP-brädor och jättepaddlar (upp till 10 pers. på en bräda!) hyrs längs stranden. Hunden är välkommen ombord. Uthyrningsbasen i Doussard vid sjöns sydände har bäst urval. Boka i förväg i juli/aug.</p>
-        <p style="color:rgba(245,240,232,0.5); font-size:0.78rem; margin-bottom:1rem;"><strong style="color:rgba(245,240,232,0.75);">Pris:</strong> SUP från ~12 €/tim. Kajak från ~17 €/tim. <strong style="color:rgba(245,240,232,0.75);">Tips:</strong> Paddla tidigt på morgonen – vattnet är spegelblank och temperaturen skön.</p>
-        <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-          <a href="https://www.checkyeti.com/en/d/2297/18597" target="_blank" rel="noopener" class="annecy-link">Kajakhyra (CheckYeti) →</a>
-          <a href="https://www.stand-up-annecy.com/v3/en/stand-up-paddle-rental-annecy/" target="_blank" rel="noopener" class="annecy-link">Stand Up Annecy (Sévrier) →</a>
-          <a href="https://en.lac-annecy.com/activite-bookable/single-canoe-kayak-rental-2-hours/" target="_blank" rel="noopener" class="annecy-link">Kajak Menthon (lac-annecy.com) →</a>
+        <span class="a-icon">🚣</span>
+        <h4>Kajak & SUP på sjön</h4>
+        <p class="a-desc">Lac d'Annecy är Europas renaste insjö – kristallklart turkost vatten. Kajaker (upp till 3 pers.) och SUP-brädor hyrs i Doussard. Hunden välkommen ombord på kajaken. En jättepaddel för upp till 10 personer finns – hela familjen på en bräda!</p>
+        <div class="a-meta">💰 SUP från 12 €/tim · Kajak från 17 €/tim · 🐾 Hund välkommen · ⚠️ Boka i förväg jul/aug</div>
+        <div>
+          <a href="https://www.checkyeti.com/en/d/2297/18597" target="_blank" class="a-btn gold">🎟 Klicka här – boka kajak</a>
+          <a href="https://www.stand-up-annecy.com/v3/en/stand-up-paddle-rental-annecy/" target="_blank" class="a-btn ghost">📍 Klicka här – Stand Up Annecy (SUP)</a>
         </div>
       </div>
 
-      <!-- CYKELRUNDA -->
+      <!-- CYKEL -->
       <div class="annecy-card">
-        <span class="annecy-icon">🚴</span>
-        <h4>Cykelrunda runt sjön</h4>
-        <p style="margin-bottom:0.75rem;">40 km lång cykelväg runt hela sjön med bara 250 m höjdskillnad – tillgänglig för hela familjen. Västra stranden är den lättaste (gammal järnvägslinje, motorfordon förbjudna). Räkna med 2–4 timmar beroende på tempo. Elcyklar finns att hyra för den som vill ha lite hjälp.</p>
-        <p style="color:rgba(245,240,232,0.5); font-size:0.78rem; margin-bottom:1rem;"><strong style="color:rgba(245,240,232,0.75);">Tips:</strong> Starta medurs för att ha sjön på höger sida hela vägen. Cykla in via Talloires för en fikastopp med sjöutsikt. <strong style="color:rgba(245,240,232,0.75);">Pris:</strong> Hyrcykel från ~20–35 €/dag.</p>
-        <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-          <a href="https://www.velo-annecy.fr/" target="_blank" rel="noopener" class="annecy-link">Vélo du Lac (boka online) →</a>
-          <a href="https://nomadbike.fr/en/" target="_blank" rel="noopener" class="annecy-link">Nomad Bike (Talloires) →</a>
-          <a href="https://www.annecy-location-velo.com/en/bike-routes/" target="_blank" rel="noopener" class="annecy-link">Kartguide för cykelrutter →</a>
+        <span class="a-icon">🚴</span>
+        <h4>Cykelrunda runt sjön – 40 km</h4>
+        <p class="a-desc">En av Europas vackraste cykelleder – 40 km runt hela sjön med bara 250 m höjdskillnad. Västra stranden är motorfordonsfri (gammal järnvägslinje). Räkna med 2–4 timmar. Elcyklar finns. Starta medurs för sjön på höger sida hela vägen.</p>
+        <div class="a-meta">⏱ 2–4 timmar · 💰 Hyrcykel från 20–35 €/dag · 🚵 Elcykel +15 €</div>
+        <div>
+          <a href="https://www.velo-annecy.fr/" target="_blank" class="a-btn gold">🎟 Klicka här – Vélo du Lac, boka online</a>
+          <a href="https://nomadbike.fr/en/" target="_blank" class="a-btn ghost">📍 Klicka här – Nomad Bike, Talloires</a>
         </div>
       </div>
 
-      <!-- GORGES DU FIER -->
+      <!-- GORGES -->
       <div class="annecy-card">
-        <span class="annecy-icon">🌊</span>
-        <h4>Gorges du Fier</h4>
-        <p style="margin-bottom:0.75rem;">En spektakulär naturklyfta 10 km väster om Annecy. Man vandrar på en 252 m lång hängbro fäst i berget 25 m ovanför floden. Sedan väntar "Jättegrytorna" och "Stenhavet" – en labyrint av enorma kalkstensblock. Besöket tar ca 1 timme. Öppet mars–oktober, kl 09:30–19:15 (sommarsäsong). Gå tidigt på morgonen – långa köer på eftermiddagen i juli/aug!</p>
-        <p style="color:rgba(245,240,232,0.5); font-size:0.78rem; margin-bottom:1rem;"><strong style="color:rgba(245,240,232,0.75);">Inträde:</strong> Vuxna ~6 €, barn 7–15 år ~3 €. Parkering på plats. Café och picknickplats. <strong style="color:rgba(245,240,232,0.75);">Hund:</strong> Tillåtet med koppel.</p>
-        <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-          <a href="https://www.gorgesdufier.com/" target="_blank" rel="noopener" class="annecy-link">Officiell hemsida →</a>
-          <a href="https://en.lac-annecy.com/equipment/les-gorges-du-fier-lovagny/" target="_blank" rel="noopener" class="annecy-link">Turistinfo & priser →</a>
+        <span class="a-icon">🌊</span>
+        <h4>Gorges du Fier – dramatisk naturklyfta</h4>
+        <p class="a-desc">Spektakulär naturklyfta 10 km från Annecy. Man vandrar på 252 m lång hängbro fäst i berget 25 m ovanför floden. Sedan väntar "Jättegrytorna" och "Stenhavet" – fascinerande geologiska formationer. Hund med koppel välkommen. Gå tidigt – långa köer på eftermiddagen!</p>
+        <div class="a-meta">💰 Vuxna 6 € · Barn 7–15 år 3 € · ⏱ Ca 1 timme · 🐾 Hund med koppel · ⏰ 09:30–19:15 (jun–aug)</div>
+        <div>
+          <a href="https://www.gorgesdufier.com/" target="_blank" class="a-btn gold">📍 Klicka här – officiell hemsida & info</a>
+          <a href="https://en.lac-annecy.com/equipment/les-gorges-du-fier-lovagny/" target="_blank" class="a-btn ghost">📋 Klicka här – priser & öppettider</a>
         </div>
       </div>
 
       <!-- GAMLA STAN -->
       <div class="annecy-card">
-        <span class="annecy-icon">🏰</span>
+        <span class="a-icon">🏰</span>
         <h4>Gamla stan & Château d'Annecy</h4>
-        <p style="margin-bottom:0.75rem;">Medeltida kanaler, pastellfärgade fasader och det ikoniska Palais de l'Isle speglas i det blå vattnet. Slottet Château d'Annecy tronar ovan staden med panoramautsikt. Kvälls­promenader längs kanalerna med hunden är oförglömliga – ljuset är magiskt vid solnedgång. Gå tidig morgon för att undvika folkmassor.</p>
-        <p style="color:rgba(245,240,232,0.5); font-size:0.78rem; margin-bottom:1rem;"><strong style="color:rgba(245,240,232,0.75);">Tips:</strong> Marché du Thiou (torghandel) på tisdagar och fredagar. <strong style="color:rgba(245,240,232,0.75);">Hund:</strong> Välkomnas i de flesta caféer och restauranger utomhus.</p>
-        <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-          <a href="https://www.tourisme-annecy.net/en/" target="_blank" rel="noopener" class="annecy-link">Turistbyrån Annecy →</a>
-          <a href="https://en.lac-annecy.com/must-sees/" target="_blank" rel="noopener" class="annecy-link">Sevärdheter lac-annecy.com →</a>
+        <p class="a-desc">Medeltida kanaler, pastellfärgade fasader och det ikoniska Palais de l'Isle speglas i klart vatten. Château d'Annecy (1200-tal) ger panoramautsikt. Kvälls­promenader längs kanalerna med hunden är oförglömliga. Marché du Thiou tisdagar och fredagar. Gå tidig morgon för färre turister.</p>
+        <div class="a-meta">💰 Slottet: ~6 €/vuxen · 🐾 Hund välkommen i gamla stan & utomhus · 🆓 Gratis promenad</div>
+        <div>
+          <a href="https://www.tourisme-annecy.net/en/" target="_blank" class="a-btn gold">📍 Klicka här – turistbyrå Annecy</a>
+          <a href="https://en.lac-annecy.com/must-sees/" target="_blank" class="a-btn ghost">🗺 Klicka här – sevärdheter & tips</a>
         </div>
       </div>
 
       <!-- HUNDSTRAND -->
       <div class="annecy-card">
-        <span class="annecy-icon">🐾</span>
+        <span class="a-icon">🐾</span>
         <h4>Hundvänliga stränder</h4>
-        <p style="margin-bottom:0.75rem;">De kommunala stränderna nära Annecy centrum förbjuder hundar under badsäsongen (juni–sept). Bästa alternativet är <strong style="color:rgba(245,240,232,0.85);">Plage du Bout-du-Lac</strong> vid sjöns sydände nära Doussard – mer avslappnad policy och omgiven av natur. Även stränderna i Talloires på östsidan har mer utrymme.</p>
-        <p style="color:rgba(245,240,232,0.5); font-size:0.78rem;"><strong style="color:rgba(245,240,232,0.75);">Tips:</strong> Koppelplikt gäller alltid. Tidig morgon innan stränderna öppnar officiellt är ofta hundfritt. Kontrollera skyltar på plats.</p>
+        <p class="a-desc">Kommunala stränder nära centrum förbjuder hundar jun–sept. Bästa alternativet är Plage du Bout-du-Lac vid sjöns sydände nära Doussard – mer avslappnad policy och omgiven av natur. Talloires på östsidan har också god tillgång. Koppelplikt gäller alltid – gå tidigt morgon för friare känsla.</p>
+        <div class="a-meta">🐾 Plage du Bout-du-Lac: mest hundvänlig · ☀️ Gå tidigt morgon</div>
+        <div>
+          <a href="https://en.lac-annecy.com/beaches/" target="_blank" class="a-btn gold">📍 Klicka här – karta över alla stränder</a>
+        </div>
       </div>
 
-      <!-- COL DE LA COLOMBIÈRE -->
+      <!-- COL COLOMBIÈRE -->
       <div class="annecy-card">
-        <span class="annecy-icon">🥾</span>
-        <h4>Col de la Colombière</h4>
-        <p style="margin-bottom:0.75rem;">45 minuter från Annecy ligger detta dramatiska alppass på 1 613 m höjd – ett klassiskt Tour de France-pass. Kör upp och starta sedan en vandring med hunden längs välmärkta leder med enastående utsikt. På vägen dit passerar ni Le Grand-Bornand, en pittoresk alpby med fantastiska ostar.</p>
-        <p style="color:rgba(245,240,232,0.5); font-size:0.78rem;"><strong style="color:rgba(245,240,232,0.75);">Tips:</strong> Kombinera med via ferrata du Jallouvre i Grand-Bornand. Ta med picknick – restaurangerna i byarna stänger tidigt på lunchen.</p>
+        <span class="a-icon">🥾</span>
+        <h4>Col de la Colombière & alpvandring</h4>
+        <p class="a-desc">45 min från Annecy – ett klassiskt Tour de France-pass (1 613 m). Kör upp och vandra längs välmärkta leder med enastående alputsikt. I Grand-Bornand på vägen: pittoresk alpby med lokala ostar, via ferrata du Jallouvre och en av regionens finaste bergsrestauranger.</p>
+        <div class="a-meta">🆓 Gratis att besöka · 🐾 Hund välkommen · ⏱ Halvdag</div>
+        <div>
+          <a href="https://www.grand-bornand.com/en/" target="_blank" class="a-btn gold">📍 Klicka här – Grand-Bornand & Colombière info</a>
+        </div>
       </div>
 
     </div>
   </div>
 </div>
 
-<!-- ACCOMMODATIONS -->
+<!-- BOENDEN -->
 <section id="boenden">
   <div class="section-label">Boenden</div>
   <h2 class="section-title">Hundvänliga boenden längs rutten</h2>
-  <p class="section-intro">Alla boenden nedan tillåter hund. Ring alltid och bekräfta hundpolicy och eventuell avgift direkt med hotellet innan bokning – speciellt i Frankrike varierar reglerna.</p>
+  <p class="section-intro">Alla boenden nedan tillåter hund. Bekräfta alltid hundpolicyn och eventuell avgift vid bokning – speciellt i Frankrike varierar reglerna.</p>
 
   <div class="accom-list">
 
     <div class="accom-card">
-      <div>
-        <div class="accom-stop">Natt 1 · Malmö</div>
-        <div class="accom-name">Clarion Hotel Malmö Live</div>
-        <div class="accom-desc">Modernt designhotell precis vid Malmöhus med skybar på 25:e våningen och utsikt mot Öresund. Husdjur (hund) välkomnas i dedikerade rum mot en avgift på 250–300 kr/natt – kontakta hotellet vid bokning för att få ett hundrum. Bra frukost, gym och bastu. Centralt läge, 5 min promenad till centralstationen. Perfekt för tidig avfärd via Öresundsbron morgonen efter.</div>
-        <div class="accom-links">
-          <a href="https://www.strawberryhotels.com/hotels/sweden/malmo/clarion-hotel-malmo-live/" target="_blank" rel="noopener" class="accom-link">Officiell hemsida →</a>
-          <a href="https://www.booking.com/hotel/se/clarion-malmo-live.html" target="_blank" rel="noopener" class="accom-link">Booking.com →</a>
-        </div>
+      <div class="accom-hdr">
+        <div><div class="accom-stop">Natt 1 · Malmö</div><div class="accom-name">Clarion Hotel Malmö Live</div></div>
+        <div class="accom-rating"><span class="r-num">4.4 / 5</span><span class="stars">★★★★</span><span class="dog-badge">🐾 250–300 kr/natt</span></div>
       </div>
-      <div class="accom-rating">
-        <span>4.4 / 5</span>
-        <span class="stars">★★★★</span>
-        <span class="dog-badge">🐾 250–300 kr/natt</span>
+      <div class="accom-desc">Modernt designhotell vid Malmöhus med skybar på 25:e våningen och utsikt mot Öresund. Hundar välkomnas i dedikerade rum mot avgift – ring hotellet vid bokning och be om hundrum. Bra frukost, gym och bastu. 5 min till centralstationen – perfekt för tidig avfärd via Öresundsbron.</div>
+      <div>
+        <a href="https://www.strawberryhotels.com/hotels/sweden/malmo/clarion-hotel-malmo-live/" target="_blank" class="btn btn-primary">🏨 Klicka här – officiell hemsida</a>
+        <a href="https://www.booking.com/hotel/se/clarion-malmo-live.html" target="_blank" class="btn btn-secondary">📅 Klicka här – boka på Booking.com</a>
       </div>
     </div>
 
     <div class="accom-card">
-      <div>
-        <div class="accom-stop">Natt 2 · Hamburg</div>
-        <div class="accom-name">Hotel du Nord Alster</div>
-        <div class="accom-desc">Charmigt boutique-hotell i lugnt läge vid Alstersjön, 5 min med buss till centrum. Personlig service och högt betyg – hundvänlighet bekräftad i recensioner. Balkongrum med sjövy finns att boka – gör det tidigt, det är ett litet hotell med begränsat antal rum. Nära Stadtpark (perfekt för hundpromenad).</div>
-        <div class="accom-links">
-          <a href="https://www.booking.com/hotel/de/du-nord-alster.html" target="_blank" rel="noopener" class="accom-link">Booking.com →</a>
-          <a href="https://www.tripadvisor.com/Hotel_Review-g187331-d253729-Reviews-Hotel_du_Nord_Alster-Hamburg.html" target="_blank" rel="noopener" class="accom-link">Recensioner (TripAdvisor) →</a>
-        </div>
+      <div class="accom-hdr">
+        <div><div class="accom-stop">Natt 2 · Hamburg</div><div class="accom-name">Hotel du Nord Alster</div></div>
+        <div class="accom-rating"><span class="r-num">4.6 / 5</span><span class="stars">★★★★½</span><span class="dog-badge">🐾 Bekräftat</span></div>
       </div>
-      <div class="accom-rating">
-        <span>4.6 / 5</span>
-        <span class="stars">★★★★½</span>
-        <span class="dog-badge">🐾 Bekräftat</span>
+      <div class="accom-desc">Charmigt boutique-hotell i lugnt Alsterläge, 5 min med buss till centrum. Hundvänlighet bekräftad i recensioner. Balkongrum med sjövy finns – boka tidigt, det är ett litet hotell. Nära Stadtpark och Alster.</div>
+      <div>
+        <a href="https://www.booking.com/hotel/de/du-nord-alster.html" target="_blank" class="btn btn-primary">📅 Klicka här – boka på Booking.com</a>
+        <a href="https://www.tripadvisor.com/Hotel_Review-g187331-d253729-Reviews-Hotel_du_Nord_Alster-Hamburg.html" target="_blank" class="btn btn-secondary">⭐ Klicka här – läs recensioner</a>
       </div>
     </div>
 
-    <div class="accom-card" style="border: 2px solid var(--sage);">
-      <div>
-        <div class="accom-stop">Natt 3–4 · Schwarzwald · ⭐ Rekommenderas</div>
-        <div class="accom-name">NATURE TITISEE – Easy Life Hotel</div>
-        <div class="accom-desc">Familjeslägenheter med fullt kök och direkt sjövy över Titisee – ett av Schwarzwalds vackraste vatten. Skog runt knuten, hundar trivs utmärkt. Köket innebär ni kan spara på matkostnaden under de två nätterna. Fantastisk frukost. Strandpromenad med hunden på 2 min. Sommarrodelbanan på Feldberg (20 min bil) är ett must för tonåringarna.</div>
-        <div class="accom-links">
-          <a href="https://www.booking.com/hotel/de/easy-life-titisee.html" target="_blank" rel="noopener" class="accom-link">Booking.com →</a>
-          <a href="https://www.tripadvisor.com/Hotel_Review-g187275-d6545684-Reviews-Nature_Titisee_Easy_Life_Hotel-Titisee_Neustadt_Baden_Wurttemberg.html" target="_blank" rel="noopener" class="accom-link">Recensioner →</a>
-        </div>
+    <div class="accom-card" style="border:2px solid var(--sage);">
+      <div class="accom-hdr">
+        <div><div class="accom-stop">Natt 3–4 · Schwarzwald · ⭐ Rekommenderas</div><div class="accom-name">NATURE TITISEE – Easy Life Hotel</div></div>
+        <div class="accom-rating"><span class="r-num">4.5 / 5</span><span class="stars">★★★★½</span><span class="dog-badge">🐾 Hundvänligt</span></div>
       </div>
-      <div class="accom-rating">
-        <span>4.5 / 5</span>
-        <span class="stars">★★★★½</span>
-        <span class="dog-badge">🐾 Hundvänligt</span>
+      <div class="accom-desc">Familjeslägenheter med fullt kök och direkt sjövy mot Titisee. Skog runt knuten – hunden trivs utmärkt. Köket sparar matkostnader. Fantastisk frukost. Strandpromenad 2 min bort. Sommarrodelbanan på Feldberg: 20 min med bil.</div>
+      <div>
+        <a href="https://www.booking.com/hotel/de/easy-life-titisee.html" target="_blank" class="btn btn-primary">📅 Klicka här – boka på Booking.com</a>
+        <a href="https://www.tripadvisor.com/Hotel_Review-g187275-d6545684-Reviews-Nature_Titisee_Easy_Life_Hotel-Titisee_Neustadt_Baden_Wurttemberg.html" target="_blank" class="btn btn-secondary">⭐ Klicka här – läs recensioner</a>
       </div>
     </div>
 
     <div class="accom-card">
-      <div>
-        <div class="accom-stop">Natt 3–4 · Schwarzwald · Alternativ (mer lyx)</div>
-        <div class="accom-name">Boutique Hotel Alemannenhof</div>
-        <div class="accom-desc">Mer exklusivt boutique-hotell med sjöutsikt, gratis paddleboards och spa. Utmärkt mat – välj detta om ni vill ha ett lite lyxigare stopp mitt i resan. Terrassen med sjövy är magisk vid solnedgång.</div>
-        <div class="accom-links">
-          <a href="https://www.booking.com/hotel/de/alemannenhof-titisee.html" target="_blank" rel="noopener" class="accom-link">Booking.com →</a>
-        </div>
+      <div class="accom-hdr">
+        <div><div class="accom-stop">Natt 3–4 · Schwarzwald · Alternativ (mer lyx)</div><div class="accom-name">Boutique Hotel Alemannenhof</div></div>
+        <div class="accom-rating"><span class="r-num">4.6 / 5</span><span class="stars">★★★★½</span><span class="dog-badge">🐾 Hundvänligt</span></div>
       </div>
-      <div class="accom-rating">
-        <span>4.6 / 5</span>
-        <span class="stars">★★★★½</span>
-        <span class="dog-badge">🐾 Hundvänligt</span>
+      <div class="accom-desc">Exklusivt boutique-hotell med sjöutsikt, gratis paddleboards och spa. Utmärkt mat på plats. Välj detta om ni vill ha ett lyxigare stopp mitt i resan – terrassen med sjövy vid solnedgång är magisk.</div>
+      <div>
+        <a href="https://www.booking.com/hotel/de/alemannenhof-titisee.html" target="_blank" class="btn btn-primary">📅 Klicka här – boka på Booking.com</a>
       </div>
     </div>
 
-    <div class="accom-card" style="border: 2px solid var(--gold); background: rgba(201,168,76,0.04);">
-      <div>
-        <div class="accom-stop">Natt 5–9 · Annecy · ⭐ Bästa läget – Självhushåll</div>
-        <div class="accom-name">Apparthôtel Privilodges Le Royal</div>
-        <div class="accom-desc">Självhushållslägenheter mitt i Annecys gamla stad – idealiskt för er familjebas! Fullt utrustat kök, parkering på plats och husdjursvänligt bekräftat. Kanalerna, restaurangerna och marknaden är bokstavligen utanför dörren. Inga transporter behövs för kvällsutflykter i gamla stan.</div>
-        <div class="accom-links">
-          <a href="https://www.booking.com/hotel/fr/le-royal-annecy.html" target="_blank" rel="noopener" class="accom-link">Booking.com →</a>
-          <a href="https://www.tripadvisor.com/Hotel_Review-g187197-d580697-Reviews-Privilodges_Le_Royal-Annecy_Haute_Savoie_Auvergne_Rhone_Alpes.html" target="_blank" rel="noopener" class="accom-link">Recensioner →</a>
-        </div>
+    <div class="accom-card" style="border:2px solid var(--gold);background:rgba(201,168,76,.02);">
+      <div class="accom-hdr">
+        <div><div class="accom-stop">Natt 5–9 · Annecy · ⭐ Bästa läget – Självhushåll</div><div class="accom-name">Apparthôtel Privilodges Le Royal</div></div>
+        <div class="accom-rating"><span class="r-num">4.5 / 5</span><span class="stars">★★★★½</span><span class="dog-badge">🐾 Bekräftat</span></div>
       </div>
-      <div class="accom-rating">
-        <span>4.5 / 5</span>
-        <span class="stars">★★★★½</span>
-        <span class="dog-badge">🐾 Bekräftat</span>
+      <div class="accom-desc">Självhushållslägenheter mitt i Annecys gamla stad – idealisk familjebas! Fullt utrustat kök, parkering på plats, husdjursvänligt bekräftat. Kanalerna, restaurangerna och marknaden är bokstavligen utanför dörren. Inga transporter behövs för kvällsutflykter.</div>
+      <div>
+        <a href="https://www.booking.com/hotel/fr/le-royal-annecy.html" target="_blank" class="btn btn-primary">📅 Klicka här – boka på Booking.com</a>
+        <a href="https://www.tripadvisor.com/Hotel_Review-g187197-d580697-Reviews-Privilodges_Le_Royal-Annecy_Haute_Savoie_Auvergne_Rhone_Alpes.html" target="_blank" class="btn btn-secondary">⭐ Klicka här – läs recensioner</a>
       </div>
     </div>
 
     <div class="accom-card">
-      <div>
-        <div class="accom-stop">Natt 5–9 · Annecy · Alternativ – Naturliv & trädgård</div>
-        <div class="accom-name">Chalets Vacances Riante Colline (Talloires)</div>
-        <div class="accom-desc">Charmerande uthyrningsstugor med stor privat trädgård i pittoreska Talloires på sjöns östsida. Hundvänliga recensioner, barnen som paraglidade i närheten. Lugnt, avskilt och naturskön omgivning – 20 min promenad till sjöstranden. Välj detta om ni vill ha mer utomhusyta för hunden och lite mer privatliv.</div>
-        <div class="accom-links">
-          <a href="https://www.booking.com/hotel/fr/riante-colline.html" target="_blank" rel="noopener" class="accom-link">Booking.com →</a>
-          <a href="https://www.airbnb.com/s/Talloires--France/homes?refinement_paths%5B%5D=%2Fhomes&query=Talloires%2C%20France&pets_allowed=true" target="_blank" rel="noopener" class="accom-link">Airbnb hundsäkra (Talloires) →</a>
-        </div>
+      <div class="accom-hdr">
+        <div><div class="accom-stop">Natt 5–9 · Annecy · Alternativ – Natur & trädgård</div><div class="accom-name">Chalets Vacances Riante Colline (Talloires)</div></div>
+        <div class="accom-rating"><span class="r-num">4.4 / 5</span><span class="stars">★★★★</span><span class="dog-badge">🐾 Hundvänligt</span></div>
       </div>
-      <div class="accom-rating">
-        <span>4.4 / 5</span>
-        <span class="stars">★★★★</span>
-        <span class="dog-badge">🐾 Hundvänligt</span>
+      <div class="accom-desc">Charmerande stugor med stor privat trädgård i pittoreska Talloires. Lugnt och naturskön – 20 min promenad till sjöstranden. Välj detta om ni vill ha mer utomhusyta för hunden och privatliv i alpidyll.</div>
+      <div>
+        <a href="https://www.booking.com/hotel/fr/riante-colline.html" target="_blank" class="btn btn-primary">📅 Klicka här – boka på Booking.com</a>
+        <a href="https://www.airbnb.com/s/Talloires--France/homes?query=Talloires&pets_allowed=true" target="_blank" class="btn btn-secondary">🏡 Klicka här – Airbnb hundvänliga Talloires</a>
       </div>
     </div>
 
     <div class="accom-card">
-      <div>
-        <div class="accom-stop">Natt 5–9 · Annecy · Alternativ – Direkt vid sjön</div>
-        <div class="accom-name">Hôtel Le Bel Abri (Veyrier-du-Lac)</div>
-        <div class="accom-desc">Direkt vid sjön i Veyrier-du-Lac med balkong och sjöutsikt. Restaurang på plats. Mer hotellkänsla om ni föredrar det framför lägenhet. Kontakta hotellet direkt och bekräfta hundpolicyn – de är ett litet familjedrivet ställe och brukar vara flexibla.</div>
-        <div class="accom-links">
-          <a href="https://www.booking.com/hotel/fr/le-bel-abri.html" target="_blank" rel="noopener" class="accom-link">Booking.com →</a>
-        </div>
+      <div class="accom-hdr">
+        <div><div class="accom-stop">Natt 5–9 · Annecy · Alternativ – Sjödirekt</div><div class="accom-name">Hôtel Le Bel Abri (Veyrier-du-Lac)</div></div>
+        <div class="accom-rating"><span class="r-num">4.3 / 5</span><span class="stars">★★★★</span><span class="dog-badge">🐾 Kontrollera</span></div>
       </div>
-      <div class="accom-rating">
-        <span>4.3 / 5</span>
-        <span class="stars">★★★★</span>
-        <span class="dog-badge">🐾 Kontrollera</span>
+      <div class="accom-desc">Direkt vid sjön med balkong och sjöutsikt. Restaurang på plats. Ring hotellet direkt och bekräfta hundpolicyn – familjedrivna ställen brukar vara flexibla.</div>
+      <div>
+        <a href="https://www.booking.com/hotel/fr/le-bel-abri.html" target="_blank" class="btn btn-primary">📅 Klicka här – boka på Booking.com</a>
       </div>
     </div>
 
     <div class="accom-card">
-      <div>
-        <div class="accom-stop">Natt 10 · Lyon (hemresa)</div>
-        <div class="accom-name">Hôtel des Célestins</div>
-        <div class="accom-desc">Boutique-hotell i hjärtat av Vieux Lyon – bekräftat hundvänligt (recensent reste explicit med liten hund). Metro 2 min, perfekt för en kväll i Frankrikes matstad. Fin frukost och charmig inredning. Rummen är inte stora men läget är oslåbart för en natt.</div>
-        <div class="accom-links">
-          <a href="https://www.booking.com/hotel/fr/des-celestins.html" target="_blank" rel="noopener" class="accom-link">Booking.com →</a>
-          <a href="https://www.tripadvisor.com/Hotel_Review-g187265-d293765-Reviews-Hotel_des_Celestins-Lyon_Auvergne_Rhone_Alpes.html" target="_blank" rel="noopener" class="accom-link">Recensioner →</a>
-        </div>
+      <div class="accom-hdr">
+        <div><div class="accom-stop">Natt 10 · Lyon (hemresa)</div><div class="accom-name">Hôtel des Célestins</div></div>
+        <div class="accom-rating"><span class="r-num">4.3 / 5</span><span class="stars">★★★★</span><span class="dog-badge">🐾 Bekräftat</span></div>
       </div>
-      <div class="accom-rating">
-        <span>4.3 / 5</span>
-        <span class="stars">★★★★</span>
-        <span class="dog-badge">🐾 Bekräftat</span>
+      <div class="accom-desc">Boutique-hotell i Vieux Lyon – bekräftat hundvänligt, recensent reste explicit med liten hund. Metro 2 min. Fin frukost och charmig inredning. Oslåbart läge för en natt i Frankrikes matstad.</div>
+      <div>
+        <a href="https://www.booking.com/hotel/fr/des-celestins.html" target="_blank" class="btn btn-primary">📅 Klicka här – boka på Booking.com</a>
+        <a href="https://www.tripadvisor.com/Hotel_Review-g187265-d293765-Reviews-Hotel_des_Celestins-Lyon_Auvergne_Rhone_Alpes.html" target="_blank" class="btn btn-secondary">⭐ Klicka här – läs recensioner</a>
       </div>
     </div>
 
     <div class="accom-card">
-      <div>
-        <div class="accom-stop">Natt 11 · Köln (hemresa)</div>
-        <div class="accom-name">Hotel Domspitzen</div>
-        <div class="accom-desc">5 minuter till Kölner Dom och centralstationen. Utmärkt frukost med ägg à la minute. Familjedrivet boutique-hotell i charming miljö. Kontakta hotellet direkt för hundpolicy – sådana ställen är ofta flexibla. Sista stopppet innan sista körning hem till Tyresö!</div>
-        <div class="accom-links">
-          <a href="https://www.booking.com/hotel/de/domspitzen.html" target="_blank" rel="noopener" class="accom-link">Booking.com →</a>
-          <a href="https://www.tripadvisor.com/Hotel_Review-g187371-d296499-Reviews-Hotel_Domspitzen-Cologne_North_Rhine_Westphalia.html" target="_blank" rel="noopener" class="accom-link">Recensioner →</a>
-        </div>
+      <div class="accom-hdr">
+        <div><div class="accom-stop">Natt 11 · Köln (hemresa)</div><div class="accom-name">Hotel Domspitzen</div></div>
+        <div class="accom-rating"><span class="r-num">4.5 / 5</span><span class="stars">★★★★½</span><span class="dog-badge">🐾 Kontrollera</span></div>
       </div>
-      <div class="accom-rating">
-        <span>4.5 / 5</span>
-        <span class="stars">★★★★½</span>
-        <span class="dog-badge">🐾 Kontrollera</span>
+      <div class="accom-desc">5 minuter till Kölner Dom och centralstationen. Utmärkt frukost med ägg à la minute. Familjedrivet boutique-hotell – ring direkt och bekräfta hundpolicy. Sista stopp innan hemkörning!</div>
+      <div>
+        <a href="https://www.booking.com/hotel/de/domspitzen.html" target="_blank" class="btn btn-primary">📅 Klicka här – boka på Booking.com</a>
+        <a href="https://www.tripadvisor.com/Hotel_Review-g187371-d296499-Reviews-Hotel_Domspitzen-Cologne_North_Rhine_Westphalia.html" target="_blank" class="btn btn-secondary">⭐ Klicka här – läs recensioner</a>
       </div>
     </div>
 
   </div>
 </section>
-
 <div class="divider"></div>
 
-<!-- EV TIPS -->
+<!-- ELBIL -->
 <section id="elbil">
   <div class="section-label">Elbilstips</div>
   <h2 class="section-title">Smarta laddningsstopp</h2>
-  <p class="section-intro">Rutten är välutrustad med snabbladdare. Här är de viktigaste punkterna och tipsen för elbilsresan.</p>
-
+  <p class="section-intro">Rutten är välutrustad med snabbladdare. Planera med ABRP-appen för automatiska laddningsstopp anpassade till er bil.</p>
   <div class="ev-grid">
-    <div class="ev-card">
-      <h4>⚡ Helsingborg / Malmö</h4>
-      <p>Ionity vid E4 Helsingborg och Malmö Central. Ladda till 80% innan bron – Hamburg är ~300 km bort.</p>
-    </div>
-    <div class="ev-card">
-      <h4>⚡ Hamburg</h4>
-      <p>Ionity och Tesla Supercharger i Hamburg-centrum. Ladda under middagen eller övernattningen.</p>
-    </div>
-    <div class="ev-card">
-      <h4>⚡ Frankfurt / Kassel</h4>
-      <p>Dela upp Hamburg→Schwarzwald (580 km) med ett laddningsstopp. Ionity Kassel eller Frankfurt är perfekta.</p>
-    </div>
-    <div class="ev-card">
-      <h4>⚡ Freiburg</h4>
-      <p>Massor av snabbladdare i Freiburg. Ladda här innan sista sträckan söderut mot Basel och Genève.</p>
-    </div>
-    <div class="ev-card">
-      <h4>⚡ Genève</h4>
-      <p>God täckning i Genèveregionen. Annecy har egna laddpunkter i centrum och vid köpcentrum.</p>
-    </div>
-    <div class="ev-card">
-      <h4>📱 ABRP-appen</h4>
-      <p>"A Better Route Planner" – lägg in er bil och rutten, så beräknas laddningsstopp automatiskt med rätt marginaler.</p>
-    </div>
-    <div class="ev-card">
-      <h4>⚠️ Hemväg via Frankrike</h4>
-      <p>Lyon→Köln via A6/A5 har något glesare Ionity-nät. Ladda alltid full i Basel på hemvägen. Planera i ABRP.</p>
-    </div>
-    <div class="ev-card">
-      <h4>🐾 Laddning + hund</h4>
-      <p>Välj gärna laddstationer nära en park eller rastplats. Hunden behöver röra på sig efter ca 2 timmar i bilen.</p>
-    </div>
+    <div class="ev-card"><h4>⚡ Helsingborg / Malmö</h4><p>Ionity vid E4 Helsingborg och Malmö Central. Ladda till 80% innan bron – Hamburg är ~310 km bort.</p></div>
+    <div class="ev-card"><h4>⚡ Hamburg</h4><p>Ionity och Tesla Supercharger i Hamburg. Ladda under middagen eller övernattningen.</p></div>
+    <div class="ev-card"><h4>⚡ Frankfurt / Kassel</h4><p>Dela upp Hamburg→Schwarzwald (580 km) med ett laddningsstopp. Ionity Kassel eller Frankfurt är perfekta.</p></div>
+    <div class="ev-card"><h4>⚡ Freiburg</h4><p>Massor av snabbladdare i Freiburg. Ladda här innan sista sträckan mot Basel och Genève.</p></div>
+    <div class="ev-card"><h4>⚡ Genève / Annecy</h4><p>God täckning i Genèveregionen. Annecy har laddpunkter i centrum och vid köpcentrum.</p></div>
+    <div class="ev-card"><h4>📱 ABRP-appen</h4><p>"A Better Route Planner" – lägg in er bil och rutten, laddningsstopp beräknas automatiskt.</p></div>
+    <div class="ev-card"><h4>⚠️ Hemväg via Frankrike</h4><p>Lyon→Köln via A6/A5 har något glesare nät. Ladda alltid full i Basel på hemvägen.</p></div>
+    <div class="ev-card"><h4>🐾 Laddning + hund</h4><p>Välj laddstationer nära en park eller rastplats – hunden behöver röra på sig ca varannan timme.</p></div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
   <p><strong>Roadtrip Tyresö → Annecy · Sommar 2025</strong></p>
-  <p>Familjen på äventyr · 2 vuxna · killarna 14 & 16 år · 1 hund · 1 elbil</p>
-  <p style="margin-top:1rem; font-size:0.72rem;">Bekräfta alltid hundpolicy direkt med hotellet vid bokning. Laddinfrastruktur kan förändras – använd ABRP för uppdaterad planering.</p>
+  <p>Familjen på äventyr · 2 vuxna · killarna 14 &amp; 16 år · 1 hund · 1 elbil</p>
+  <p style="margin-top:1rem;font-size:.72rem;">Bekräfta alltid hundpolicy direkt med hotellet. Priser och öppettider kan ändras – kontrollera alltid via länkarna ovan. Laddinfrastruktur kan förändras – använd ABRP för uppdaterad planering.</p>
 </footer>
 
 <script>
-function initMap() {
-// Initialize map
-const map = L.map('map', {
-  center: [52, 8],
-  zoom: 5,
-  zoomControl: true,
-  scrollWheelZoom: false
-});
+function initMap(){
+  const map=L.map('map',{center:[52,8],zoom:5,scrollWheelZoom:false});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+  L.polyline([[59.222,18.241],[55.607,12.994],[53.575,10.015],[47.895,8.139],[45.900,6.124]],{color:'#2D5016',weight:3,opacity:.8}).addTo(map);
+  L.polyline([[45.900,6.124],[45.759,4.831],[50.937,6.958],[55.607,12.994],[59.222,18.241]],{color:'#C4614A',weight:2.5,opacity:.7,dashArray:'8 5'}).addTo(map);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '© OpenStreetMap contributors © CARTO',
-  subdomains: 'abcd',
-  maxZoom: 19
-}).addTo(map);
+  function mk(c,t){return L.divIcon({html:`<div style="background:${c};color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;border:2.5px solid white;box-shadow:0 2px 8px rgba(0,0,0,.25);">${t}</div>`,className:'',iconSize:[32,32],iconAnchor:[16,16]});}
+  function goldMk(){return L.divIcon({html:`<div style="background:#C9A84C;color:#1A1A14;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:16px;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,.3);">✦</div>`,className:'',iconSize:[40,40],iconAnchor:[20,20]});}
+  function homeMk(){return L.divIcon({html:`<div style="background:#2D5016;color:white;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:14px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.25);">🏠</div>`,className:'',iconSize:[36,36],iconAnchor:[18,18]});}
 
-// Route coordinates
-const outbound = [
-  [59.222, 18.241], // Tyresö
-  [55.607, 12.994], // Malmö
-  [53.575, 10.015], // Hamburg
-  [47.895, 8.139],  // Schwarzwald/Titisee
-  [45.900, 6.124]   // Annecy
-];
-
-const returnRoute = [
-  [45.900, 6.124],  // Annecy
-  [45.759, 4.831],  // Lyon
-  [50.937, 6.958],  // Köln
-  [55.607, 12.994], // Malmö
-  [59.222, 18.241]  // Tyresö
-];
-
-// Draw routes
-L.polyline(outbound, { color: '#2D5016', weight: 3, opacity: 0.8 }).addTo(map);
-L.polyline(returnRoute, { color: '#C4614A', weight: 2.5, opacity: 0.7, dashArray: '8 5' }).addTo(map);
-
-// Custom icons
-function makeIcon(color, label) {
-  return L.divIcon({
-    html: `<div style="background:${color};color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;border:2.5px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.25);font-family:'DM Sans',sans-serif;">${label}</div>`,
-    className: '',
-    iconSize: [32, 32],
-    iconAnchor: [16, 16]
+  [
+    {ll:[59.222,18.241],ic:homeMk(),t:'Tyresö',s:'Start & mål',d:'Hem – avresa tisdag 22 juli!'},
+    {ll:[55.607,12.994],ic:mk('#2D5016','1'),t:'Malmö / Köpenhamn',s:'Natt 1 · ~590 km',d:'Nyhavn, kanalbåt med hund, Faelledparken. Clarion Hotel Malmö Live.'},
+    {ll:[53.575,10.015],ic:mk('#3A7CA5','2'),t:'Hamburg',s:'Natt 2 · ~310 km',d:'Stadtpark disc-golf, Speicherstadt UNESCO, Elbphilharmonie Plaza gratis. Hotel du Nord Alster ⭐ 4.6'},
+    {ll:[47.895,8.139],ic:mk('#6B8F5E','3–4'),t:'Schwarzwald / Titisee',s:'Natt 3–4 · ~580 km',d:'Sommarrodelbana Feldberg, Titisee simning, Triberg vattenfall, Steinwasenpark. NATURE TITISEE Hotel ⭐ 4.5'},
+    {ll:[45.900,6.124],ic:goldMk(),t:'✦ Annecy',s:'Bas 4–5 nätter · ~250 km',d:'Paragliding, via ferrata, kajak, cykelrunda, gamla stan, Gorges du Fier. Privilodges Le Royal ⭐ 4.5'},
+    {ll:[45.759,4.831],ic:mk('#C4614A','A'),t:'Lyon',s:'Natt 10 (hemresa)',d:'Traboules, Vieux Lyon, Parc Tête d\'Or, bouchon-mat. Hôtel des Célestins ⭐ 4.3'},
+    {ll:[50.937,6.958],ic:mk('#C4614A','B'),t:'Köln',s:'Natt 11 (hemresa)',d:'Kölner Dom, Rhenpromenad, Kölsch. Hotel Domspitzen ⭐ 4.5. Sista stopp!'}
+  ].forEach(s=>{
+    L.marker(s.ll,{icon:s.ic}).addTo(map).bindPopup(`<div class="pop"><h3>${s.t}</h3><div class="pop-sub">${s.s}</div><p>${s.d}</p></div>`,{maxWidth:260});
   });
+
+  const leg=L.control({position:'bottomleft'});
+  leg.onAdd=function(){const d=L.DomUtil.create('div');d.style.cssText='background:white;padding:10px 14px;border-radius:10px;font-family:DM Sans,sans-serif;font-size:11px;border:1px solid rgba(0,0,0,.12);box-shadow:0 2px 8px rgba(0,0,0,.1);';d.innerHTML='<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;"><div style="width:24px;height:3px;background:#2D5016;"></div><span>Utresa</span></div><div style="display:flex;align-items:center;gap:6px;"><div style="width:24px;border-top:2px dashed #C4614A;"></div><span>Hemresa</span></div>';return d;};
+  leg.addTo(map);
+
+  window.flyTo=function(lat,lng,z){map.flyTo([lat,lng],z||10,{duration:1.2});document.getElementById('karta').scrollIntoView({behavior:'smooth',block:'start'});};
 }
-
-function goldIcon() {
-  return L.divIcon({
-    html: `<div style="background:#C9A84C;color:#1A1A14;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:16px;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.3);">✦</div>`,
-    className: '',
-    iconSize: [40, 40],
-    iconAnchor: [20, 20]
-  });
-}
-
-function homeIcon() {
-  return L.divIcon({
-    html: `<div style="background:#2D5016;color:white;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:14px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.25);">🏠</div>`,
-    className: '',
-    iconSize: [36, 36],
-    iconAnchor: [18, 18]
-  });
-}
-
-const stops = [
-  {
-    latlng: [59.222, 18.241],
-    icon: homeIcon(),
-    title: 'Tyresö',
-    sub: 'Start & mål',
-    desc: 'Hem – avresa tisdag 22 juli!'
-  },
-  {
-    latlng: [55.607, 12.994],
-    icon: makeIcon('#2D5016', '1'),
-    title: 'Malmö / Köpenhamn',
-    sub: 'Natt 1 · ~590 km',
-    desc: 'Nyhavn, strandpromenad med hunden. Clarion Hotel Malmö Live. Laddning vid Malmö C.'
-  },
-  {
-    latlng: [53.575, 10.015],
-    icon: makeIcon('#3A7CA5', '2'),
-    title: 'Hamburg',
-    sub: 'Natt 2 · ~310 km',
-    desc: 'Stadtpark, Speicherstadt, disc-golf. Hotel du Nord Alster ⭐ 4.6. Ionity snabbladdning.'
-  },
-  {
-    latlng: [47.895, 8.139],
-    icon: makeIcon('#6B8F5E', '3–4'),
-    title: 'Schwarzwald / Titisee',
-    sub: 'Natt 3–4 · ~580 km',
-    desc: 'Sommarrodelbana Feldberg, badstrand Titisee, vattenfall Triberg. NATURE TITISEE Hotel ⭐ 4.5.'
-  },
-  {
-    latlng: [45.900, 6.124],
-    icon: goldIcon(),
-    title: '✦ Annecy',
-    sub: 'Bas 4–5 nätter · ~250 km',
-    desc: 'Paragliding, via ferrata, kajak, cykelrunda, gamla stan. Apparthôtel Privilodges Le Royal ⭐ 4.5.'
-  },
-  {
-    latlng: [45.759, 4.831],
-    icon: makeIcon('#C4614A', 'A'),
-    title: 'Lyon',
-    sub: 'Natt 10 (hemresa) · ~140 km',
-    desc: 'Traboules, Vieux Lyon, Frankrikes matstad. Hôtel des Célestins ⭐ 4.3. Hundvänligt bekräftat.'
-  },
-  {
-    latlng: [50.937, 6.958],
-    icon: makeIcon('#C4614A', 'B'),
-    title: 'Köln',
-    sub: 'Natt 11 (hemresa) · ~620 km',
-    desc: 'Kölner Dom, Rhenpromenad. Hotel Domspitzen ⭐ 4.5. Sista stopp innan hemkörning.'
-  }
-];
-
-stops.forEach(s => {
-  const marker = L.marker(s.latlng, { icon: s.icon }).addTo(map);
-  marker.bindPopup(`
-    <div class="popup-inner">
-      <h3>${s.title}</h3>
-      <div class="popup-night">${s.sub}</div>
-      <p>${s.desc}</p>
-    </div>
-  `, { maxWidth: 260 });
-});
-
-// Legend
-const legend = L.control({ position: 'bottomleft' });
-legend.onAdd = function() {
-  const div = L.DomUtil.create('div');
-  div.style.cssText = 'background:white;padding:10px 14px;border-radius:10px;font-family:DM Sans,sans-serif;font-size:11px;border:1px solid rgba(0,0,0,0.12);box-shadow:0 2px 8px rgba(0,0,0,0.1);';
-  div.innerHTML = `
-    <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
-      <div style="width:24px;height:3px;background:#2D5016;border-radius:2px;"></div>
-      <span style="color:#444;">Utresa (söder)</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:6px;">
-      <div style="width:24px;height:2px;background:#C4614A;border-radius:2px;border-top:2px dashed #C4614A;"></div>
-      <span style="color:#444;">Hemresa (väster)</span>
-    </div>
-  `;
-  return div;
-};
-legend.addTo(map);
-
-// Global flyTo function
-window.flyTo = function(lat, lng, zoom) {
-  map.flyTo([lat, lng], zoom || 10, { duration: 1.2 });
-  document.getElementById('karta').scrollIntoView({ behavior: 'smooth', block: 'start' });
-};
-} // end initMap
-
-// Dynamically load Leaflet JS then init
-(function() {
-  var script = document.createElement('script');
-  script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-  script.onload = function() { initMap(); };
-  document.head.appendChild(script);
-})();
+(function(){const s=document.createElement('script');s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';s.onload=initMap;document.head.appendChild(s);})();
 </script>
 </body>
 </html>
